@@ -1,0 +1,58 @@
+{
+  "file": "C:\\Users\\yanis\\Documents\\Cours Saclay\\machine learning handson\\projet\\analyse_us_accidents\\analyse_us_accidents\\US_Accidents_March23.csv",
+  "file_bytes": 3058183727,
+  "file_mtime_ns": 1791024744941114200,
+  "rows": 7728394,
+  "columns": 46,
+  "duplicate_ids": 0,
+  "source2_rows": 3305373,
+  "source2_duplicate_event_rows": 2136,
+  "source2_conflicting_event_keys": 8,
+  "source2_near_collision_rows": 533893,
+  "identity_definition": "Source, Start_Time, End_Time, Start_Lat, Start_Lng, Distance(mi), Description",
+  "near_definition": "15-minute bins, 0.001-degree spatial cells (approximate, boundary-sensitive)",
+  "hash_note": "64-bit hashes; vanishingly rare collisions are possible",
+  "negative_durations": 0,
+  "weather": {
+    "observed": 7608166,
+    "after_start": 3787674,
+    "eligible_two_hours": 3795293
+  },
+  "constant_columns": [
+    "Country",
+    "Turning_Loop"
+  ],
+  "available_before_cleaning": {
+    "train": 2206175,
+    "validation": 448305,
+    "test": 431482,
+    "stress": 219411
+  },
+  "seed": 42,
+  "samples": {
+    "train": {
+      "rows": 199999,
+      "high_impact_prevalence": 0.3440667203336017,
+      "first": "2016-02-08 08:14:42",
+      "last": "2019-12-31 23:50:02"
+    },
+    "validation": {
+      "rows": 50000,
+      "high_impact_prevalence": 0.30252,
+      "first": "2020-01-01 00:23:14",
+      "last": "2020-12-31 23:32:07"
+    },
+    "test": {
+      "rows": 99999,
+      "high_impact_prevalence": 0.34273342733427337,
+      "first": "2021-01-01 00:13:44",
+      "last": "2021-12-31 23:55:51"
+    },
+    "stress": {
+      "rows": 50000,
+      "high_impact_prevalence": 0.34696,
+      "first": "2022-01-01 00:45:26",
+      "last": "2022-09-08 17:41:15"
+    }
+  }
+}

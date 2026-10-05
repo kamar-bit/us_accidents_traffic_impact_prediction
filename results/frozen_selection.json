@@ -1,0 +1,1110 @@
+{
+  "selection_metric": "Average Precision on 2020 validation only",
+  "best_single": "State",
+  "best_pair": [
+    "hour",
+    "Traffic_Signal"
+  ],
+  "best_nonlinear_pair": "hgb_pair_2",
+  "simple_champion": "hgb_pair_2",
+  "hgb_parameters": {
+    "max_leaf_nodes": 31,
+    "max_iter": 200
+  },
+  "feature_order": [
+    "hour",
+    "Traffic_Signal",
+    "State",
+    "day_of_week",
+    "weekend",
+    "Crossing",
+    "Start_Lat",
+    "Weather_Condition",
+    "Junction",
+    "Astronomical_Twilight",
+    "Nautical_Twilight",
+    "Civil_Twilight",
+    "Stop",
+    "Wind_Direction",
+    "Wind_Speed(mph)",
+    "Precipitation(in)",
+    "Sunrise_Sunset",
+    "Station",
+    "Humidity(%)",
+    "Amenity",
+    "Visibility(mi)",
+    "Railway",
+    "Bump",
+    "Give_Way",
+    "No_Exit",
+    "Roundabout",
+    "Traffic_Calming",
+    "Timezone",
+    "Start_Lng",
+    "Pressure(in)",
+    "Wind_Chill(F)",
+    "Temperature(F)",
+    "month"
+  ],
+  "feature_groups": {
+    "hour": "time",
+    "day_of_week": "time",
+    "month": "time",
+    "weekend": "time",
+    "Start_Lat": "geography",
+    "Start_Lng": "geography",
+    "State": "geography",
+    "Timezone": "geography",
+    "Amenity": "road",
+    "Bump": "road",
+    "Crossing": "road",
+    "Give_Way": "road",
+    "Junction": "road",
+    "No_Exit": "road",
+    "Railway": "road",
+    "Roundabout": "road",
+    "Station": "road",
+    "Stop": "road",
+    "Traffic_Calming": "road",
+    "Traffic_Signal": "road",
+    "Sunrise_Sunset": "light",
+    "Civil_Twilight": "light",
+    "Nautical_Twilight": "light",
+    "Astronomical_Twilight": "light",
+    "Temperature(F)": "weather",
+    "Wind_Chill(F)": "weather",
+    "Humidity(%)": "weather",
+    "Pressure(in)": "weather",
+    "Visibility(mi)": "weather",
+    "Wind_Speed(mph)": "weather",
+    "Precipitation(in)": "weather",
+    "Wind_Direction": "weather",
+    "Weather_Condition": "weather"
+  },
+  "dropped_train_constants": [
+    "Turning_Loop"
+  ],
+  "models": {
+    "prior": {
+      "kind": "prior",
+      "columns": [],
+      "parameters": {}
+    },
+    "best_single_rule": {
+      "kind": "one",
+      "columns": [
+        "State"
+      ],
+      "parameters": {},
+      "rule": {
+        "variable": "State",
+        "kind": "smoothed_category_rate",
+        "rates": {
+          "AL": 0.3272502705555599,
+          "AZ": 0.20061720299794805,
+          "CA": 0.43181991946491305,
+          "CO": 0.3350461841958761,
+          "CT": 0.5950389313990365,
+          "DC": 0.28872893391704313,
+          "DE": 0.1036304624420058,
+          "FL": 0.3560712075361491,
+          "GA": 0.5800110476219571,
+          "IA": 0.5436626649087851,
+          "IL": 0.1932707134633939,
+          "IN": 0.3161399308437464,
+          "KS": 0.6822923003503907,
+          "KY": 0.5495902033081593,
+          "LA": 0.18760038441467672,
+          "MA": 0.4341651628807079,
+          "MD": 0.5102268180513835,
+          "MI": 0.4103004138823489,
+          "MN": 0.5324764117387236,
+          "MO": 0.6987567472083936,
+          "MS": 0.5059676291758942,
+          "NC": 0.1405154007215619,
+          "NE": 0.15157307368195777,
+          "NH": 0.31458124627306555,
+          "NJ": 0.31808229990495807,
+          "NM": 0.4101866056404073,
+          "NV": 0.39751298444965744,
+          "NY": 0.4171414633572259,
+          "OH": 0.391981767396888,
+          "OK": 0.09383665987066077,
+          "OR": 0.28731702254776564,
+          "Other": 0.6115965053509478,
+          "PA": 0.21979755086601044,
+          "RI": 0.6392853886814386,
+          "SC": 0.2179364956821643,
+          "TN": 0.3476370772228193,
+          "TX": 0.24814181079652997,
+          "UT": 0.5299018970011238,
+          "VA": 0.47941638075887977,
+          "WA": 0.3879811172454877,
+          "WI": 0.5016650400945064
+        },
+        "unknown_rate": 0.3440667203336017,
+        "smoothing": 50
+      }
+    },
+    "best_pair_rule": {
+      "kind": "tree",
+      "columns": [
+        "hour",
+        "Traffic_Signal"
+      ],
+      "parameters": {},
+      "tree": "|--- Traffic_Signal <= 0.5000\n|   |--- hour <= 11.5000\n|   |   |--- hour <= 3.5000\n|   |   |   |--- weights: [1660.0000, 1768.0000] class: 1\n|   |   |--- hour >  3.5000\n|   |   |   |--- weights: [45855.0000, 27683.0000] class: 0\n|   |--- hour >  11.5000\n|   |   |--- weights: [41300.0000, 34871.0000] class: 0\n|--- Traffic_Signal >  0.5000\n|   |--- weights: [42371.0000, 4491.0000] class: 0\n"
+    },
+    "logistic_one": {
+      "kind": "logistic",
+      "columns": [
+        "State"
+      ],
+      "parameters": {
+        "C": 10.0
+      }
+    },
+    "logistic_pair": {
+      "kind": "logistic",
+      "columns": [
+        "hour",
+        "Traffic_Signal"
+      ],
+      "parameters": {
+        "C": 0.1
+      }
+    },
+    "logistic_full": {
+      "kind": "logistic",
+      "columns": [
+        "hour",
+        "day_of_week",
+        "month",
+        "weekend",
+        "Start_Lat",
+        "Start_Lng",
+        "State",
+        "Timezone",
+        "Amenity",
+        "Bump",
+        "Crossing",
+        "Give_Way",
+        "Junction",
+        "No_Exit",
+        "Railway",
+        "Roundabout",
+        "Station",
+        "Stop",
+        "Traffic_Calming",
+        "Traffic_Signal",
+        "Sunrise_Sunset",
+        "Civil_Twilight",
+        "Nautical_Twilight",
+        "Astronomical_Twilight",
+        "Temperature(F)",
+        "Wind_Chill(F)",
+        "Humidity(%)",
+        "Pressure(in)",
+        "Visibility(mi)",
+        "Wind_Speed(mph)",
+        "Precipitation(in)",
+        "Wind_Direction",
+        "Weather_Condition"
+      ],
+      "parameters": {
+        "C": 0.1
+      }
+    },
+    "hgb_full": {
+      "kind": "hgb",
+      "columns": [
+        "hour",
+        "day_of_week",
+        "month",
+        "weekend",
+        "Start_Lat",
+        "Start_Lng",
+        "State",
+        "Timezone",
+        "Amenity",
+        "Bump",
+        "Crossing",
+        "Give_Way",
+        "Junction",
+        "No_Exit",
+        "Railway",
+        "Roundabout",
+        "Station",
+        "Stop",
+        "Traffic_Calming",
+        "Traffic_Signal",
+        "Sunrise_Sunset",
+        "Civil_Twilight",
+        "Nautical_Twilight",
+        "Astronomical_Twilight",
+        "Temperature(F)",
+        "Wind_Chill(F)",
+        "Humidity(%)",
+        "Pressure(in)",
+        "Visibility(mi)",
+        "Wind_Speed(mph)",
+        "Precipitation(in)",
+        "Wind_Direction",
+        "Weather_Condition"
+      ],
+      "parameters": {
+        "max_leaf_nodes": 31,
+        "max_iter": 200
+      }
+    },
+    "hgb_pair_1": {
+      "kind": "hgb",
+      "columns": [
+        "hour",
+        "Traffic_Signal"
+      ],
+      "parameters": {
+        "max_leaf_nodes": 31,
+        "max_iter": 200
+      }
+    },
+    "hgb_pair_2": {
+      "kind": "hgb",
+      "columns": [
+        "Start_Lat",
+        "Traffic_Signal"
+      ],
+      "parameters": {
+        "max_leaf_nodes": 31,
+        "max_iter": 200
+      }
+    },
+    "hgb_pair_3": {
+      "kind": "hgb",
+      "columns": [
+        "day_of_week",
+        "Traffic_Signal"
+      ],
+      "parameters": {
+        "max_leaf_nodes": 31,
+        "max_iter": 200
+      }
+    },
+    "hgb_pair_4": {
+      "kind": "hgb",
+      "columns": [
+        "weekend",
+        "Traffic_Signal"
+      ],
+      "parameters": {
+        "max_leaf_nodes": 31,
+        "max_iter": 200
+      }
+    },
+    "hgb_pair_5": {
+      "kind": "hgb",
+      "columns": [
+        "hour",
+        "Crossing"
+      ],
+      "parameters": {
+        "max_leaf_nodes": 31,
+        "max_iter": 200
+      }
+    },
+    "only_time": {
+      "kind": "hgb",
+      "columns": [
+        "hour",
+        "day_of_week",
+        "month",
+        "weekend"
+      ],
+      "parameters": {
+        "max_leaf_nodes": 31,
+        "max_iter": 200
+      }
+    },
+    "without_time": {
+      "kind": "hgb",
+      "columns": [
+        "Start_Lat",
+        "Start_Lng",
+        "State",
+        "Timezone",
+        "Amenity",
+        "Bump",
+        "Crossing",
+        "Give_Way",
+        "Junction",
+        "No_Exit",
+        "Railway",
+        "Roundabout",
+        "Station",
+        "Stop",
+        "Traffic_Calming",
+        "Traffic_Signal",
+        "Sunrise_Sunset",
+        "Civil_Twilight",
+        "Nautical_Twilight",
+        "Astronomical_Twilight",
+        "Temperature(F)",
+        "Wind_Chill(F)",
+        "Humidity(%)",
+        "Pressure(in)",
+        "Visibility(mi)",
+        "Wind_Speed(mph)",
+        "Precipitation(in)",
+        "Wind_Direction",
+        "Weather_Condition"
+      ],
+      "parameters": {
+        "max_leaf_nodes": 31,
+        "max_iter": 200
+      }
+    },
+    "pair_plus_time": {
+      "kind": "hgb",
+      "columns": [
+        "hour",
+        "Traffic_Signal",
+        "day_of_week",
+        "month",
+        "weekend"
+      ],
+      "parameters": {
+        "max_leaf_nodes": 31,
+        "max_iter": 200
+      }
+    },
+    "only_geography": {
+      "kind": "hgb",
+      "columns": [
+        "Start_Lat",
+        "Start_Lng",
+        "State",
+        "Timezone"
+      ],
+      "parameters": {
+        "max_leaf_nodes": 31,
+        "max_iter": 200
+      }
+    },
+    "without_geography": {
+      "kind": "hgb",
+      "columns": [
+        "hour",
+        "day_of_week",
+        "month",
+        "weekend",
+        "Amenity",
+        "Bump",
+        "Crossing",
+        "Give_Way",
+        "Junction",
+        "No_Exit",
+        "Railway",
+        "Roundabout",
+        "Station",
+        "Stop",
+        "Traffic_Calming",
+        "Traffic_Signal",
+        "Sunrise_Sunset",
+        "Civil_Twilight",
+        "Nautical_Twilight",
+        "Astronomical_Twilight",
+        "Temperature(F)",
+        "Wind_Chill(F)",
+        "Humidity(%)",
+        "Pressure(in)",
+        "Visibility(mi)",
+        "Wind_Speed(mph)",
+        "Precipitation(in)",
+        "Wind_Direction",
+        "Weather_Condition"
+      ],
+      "parameters": {
+        "max_leaf_nodes": 31,
+        "max_iter": 200
+      }
+    },
+    "pair_plus_geography": {
+      "kind": "hgb",
+      "columns": [
+        "hour",
+        "Traffic_Signal",
+        "Start_Lat",
+        "Start_Lng",
+        "State",
+        "Timezone"
+      ],
+      "parameters": {
+        "max_leaf_nodes": 31,
+        "max_iter": 200
+      }
+    },
+    "only_road": {
+      "kind": "hgb",
+      "columns": [
+        "Amenity",
+        "Bump",
+        "Crossing",
+        "Give_Way",
+        "Junction",
+        "No_Exit",
+        "Railway",
+        "Roundabout",
+        "Station",
+        "Stop",
+        "Traffic_Calming",
+        "Traffic_Signal"
+      ],
+      "parameters": {
+        "max_leaf_nodes": 31,
+        "max_iter": 200
+      }
+    },
+    "without_road": {
+      "kind": "hgb",
+      "columns": [
+        "hour",
+        "day_of_week",
+        "month",
+        "weekend",
+        "Start_Lat",
+        "Start_Lng",
+        "State",
+        "Timezone",
+        "Sunrise_Sunset",
+        "Civil_Twilight",
+        "Nautical_Twilight",
+        "Astronomical_Twilight",
+        "Temperature(F)",
+        "Wind_Chill(F)",
+        "Humidity(%)",
+        "Pressure(in)",
+        "Visibility(mi)",
+        "Wind_Speed(mph)",
+        "Precipitation(in)",
+        "Wind_Direction",
+        "Weather_Condition"
+      ],
+      "parameters": {
+        "max_leaf_nodes": 31,
+        "max_iter": 200
+      }
+    },
+    "pair_plus_road": {
+      "kind": "hgb",
+      "columns": [
+        "hour",
+        "Traffic_Signal",
+        "Amenity",
+        "Bump",
+        "Crossing",
+        "Give_Way",
+        "Junction",
+        "No_Exit",
+        "Railway",
+        "Roundabout",
+        "Station",
+        "Stop",
+        "Traffic_Calming"
+      ],
+      "parameters": {
+        "max_leaf_nodes": 31,
+        "max_iter": 200
+      }
+    },
+    "only_light": {
+      "kind": "hgb",
+      "columns": [
+        "Sunrise_Sunset",
+        "Civil_Twilight",
+        "Nautical_Twilight",
+        "Astronomical_Twilight"
+      ],
+      "parameters": {
+        "max_leaf_nodes": 31,
+        "max_iter": 200
+      }
+    },
+    "without_light": {
+      "kind": "hgb",
+      "columns": [
+        "hour",
+        "day_of_week",
+        "month",
+        "weekend",
+        "Start_Lat",
+        "Start_Lng",
+        "State",
+        "Timezone",
+        "Amenity",
+        "Bump",
+        "Crossing",
+        "Give_Way",
+        "Junction",
+        "No_Exit",
+        "Railway",
+        "Roundabout",
+        "Station",
+        "Stop",
+        "Traffic_Calming",
+        "Traffic_Signal",
+        "Temperature(F)",
+        "Wind_Chill(F)",
+        "Humidity(%)",
+        "Pressure(in)",
+        "Visibility(mi)",
+        "Wind_Speed(mph)",
+        "Precipitation(in)",
+        "Wind_Direction",
+        "Weather_Condition"
+      ],
+      "parameters": {
+        "max_leaf_nodes": 31,
+        "max_iter": 200
+      }
+    },
+    "pair_plus_light": {
+      "kind": "hgb",
+      "columns": [
+        "hour",
+        "Traffic_Signal",
+        "Sunrise_Sunset",
+        "Civil_Twilight",
+        "Nautical_Twilight",
+        "Astronomical_Twilight"
+      ],
+      "parameters": {
+        "max_leaf_nodes": 31,
+        "max_iter": 200
+      }
+    },
+    "only_weather": {
+      "kind": "hgb",
+      "columns": [
+        "Temperature(F)",
+        "Wind_Chill(F)",
+        "Humidity(%)",
+        "Pressure(in)",
+        "Visibility(mi)",
+        "Wind_Speed(mph)",
+        "Precipitation(in)",
+        "Wind_Direction",
+        "Weather_Condition"
+      ],
+      "parameters": {
+        "max_leaf_nodes": 31,
+        "max_iter": 200
+      }
+    },
+    "without_weather": {
+      "kind": "hgb",
+      "columns": [
+        "hour",
+        "day_of_week",
+        "month",
+        "weekend",
+        "Start_Lat",
+        "Start_Lng",
+        "State",
+        "Timezone",
+        "Amenity",
+        "Bump",
+        "Crossing",
+        "Give_Way",
+        "Junction",
+        "No_Exit",
+        "Railway",
+        "Roundabout",
+        "Station",
+        "Stop",
+        "Traffic_Calming",
+        "Traffic_Signal",
+        "Sunrise_Sunset",
+        "Civil_Twilight",
+        "Nautical_Twilight",
+        "Astronomical_Twilight"
+      ],
+      "parameters": {
+        "max_leaf_nodes": 31,
+        "max_iter": 200
+      }
+    },
+    "pair_plus_weather": {
+      "kind": "hgb",
+      "columns": [
+        "hour",
+        "Traffic_Signal",
+        "Temperature(F)",
+        "Wind_Chill(F)",
+        "Humidity(%)",
+        "Pressure(in)",
+        "Visibility(mi)",
+        "Wind_Speed(mph)",
+        "Precipitation(in)",
+        "Wind_Direction",
+        "Weather_Condition"
+      ],
+      "parameters": {
+        "max_leaf_nodes": 31,
+        "max_iter": 200
+      }
+    },
+    "budget_1": {
+      "kind": "hgb",
+      "columns": [
+        "State"
+      ],
+      "parameters": {
+        "max_leaf_nodes": 31,
+        "max_iter": 200
+      }
+    },
+    "budget_2": {
+      "kind": "hgb",
+      "columns": [
+        "hour",
+        "Traffic_Signal"
+      ],
+      "parameters": {
+        "max_leaf_nodes": 31,
+        "max_iter": 200
+      }
+    },
+    "budget_5": {
+      "kind": "hgb",
+      "columns": [
+        "hour",
+        "Traffic_Signal",
+        "State",
+        "day_of_week",
+        "weekend"
+      ],
+      "parameters": {
+        "max_leaf_nodes": 31,
+        "max_iter": 200
+      }
+    },
+    "budget_10": {
+      "kind": "hgb",
+      "columns": [
+        "hour",
+        "Traffic_Signal",
+        "State",
+        "day_of_week",
+        "weekend",
+        "Crossing",
+        "Start_Lat",
+        "Weather_Condition",
+        "Junction",
+        "Astronomical_Twilight"
+      ],
+      "parameters": {
+        "max_leaf_nodes": 31,
+        "max_iter": 200
+      }
+    },
+    "budget_33": {
+      "kind": "hgb",
+      "columns": [
+        "hour",
+        "Traffic_Signal",
+        "State",
+        "day_of_week",
+        "weekend",
+        "Crossing",
+        "Start_Lat",
+        "Weather_Condition",
+        "Junction",
+        "Astronomical_Twilight",
+        "Nautical_Twilight",
+        "Civil_Twilight",
+        "Stop",
+        "Wind_Direction",
+        "Wind_Speed(mph)",
+        "Precipitation(in)",
+        "Sunrise_Sunset",
+        "Station",
+        "Humidity(%)",
+        "Amenity",
+        "Visibility(mi)",
+        "Railway",
+        "Bump",
+        "Give_Way",
+        "No_Exit",
+        "Roundabout",
+        "Traffic_Calming",
+        "Timezone",
+        "Start_Lng",
+        "Pressure(in)",
+        "Wind_Chill(F)",
+        "Temperature(F)",
+        "month"
+      ],
+      "parameters": {
+        "max_leaf_nodes": 31,
+        "max_iter": 200
+      }
+    },
+    "train_size_25000": {
+      "kind": "hgb",
+      "columns": [
+        "hour",
+        "day_of_week",
+        "month",
+        "weekend",
+        "Start_Lat",
+        "Start_Lng",
+        "State",
+        "Timezone",
+        "Amenity",
+        "Bump",
+        "Crossing",
+        "Give_Way",
+        "Junction",
+        "No_Exit",
+        "Railway",
+        "Roundabout",
+        "Station",
+        "Stop",
+        "Traffic_Calming",
+        "Traffic_Signal",
+        "Sunrise_Sunset",
+        "Civil_Twilight",
+        "Nautical_Twilight",
+        "Astronomical_Twilight",
+        "Temperature(F)",
+        "Wind_Chill(F)",
+        "Humidity(%)",
+        "Pressure(in)",
+        "Visibility(mi)",
+        "Wind_Speed(mph)",
+        "Precipitation(in)",
+        "Wind_Direction",
+        "Weather_Condition"
+      ],
+      "parameters": {
+        "max_leaf_nodes": 31,
+        "max_iter": 200
+      }
+    },
+    "train_size_50000": {
+      "kind": "hgb",
+      "columns": [
+        "hour",
+        "day_of_week",
+        "month",
+        "weekend",
+        "Start_Lat",
+        "Start_Lng",
+        "State",
+        "Timezone",
+        "Amenity",
+        "Bump",
+        "Crossing",
+        "Give_Way",
+        "Junction",
+        "No_Exit",
+        "Railway",
+        "Roundabout",
+        "Station",
+        "Stop",
+        "Traffic_Calming",
+        "Traffic_Signal",
+        "Sunrise_Sunset",
+        "Civil_Twilight",
+        "Nautical_Twilight",
+        "Astronomical_Twilight",
+        "Temperature(F)",
+        "Wind_Chill(F)",
+        "Humidity(%)",
+        "Pressure(in)",
+        "Visibility(mi)",
+        "Wind_Speed(mph)",
+        "Precipitation(in)",
+        "Wind_Direction",
+        "Weather_Condition"
+      ],
+      "parameters": {
+        "max_leaf_nodes": 31,
+        "max_iter": 200
+      }
+    },
+    "train_size_100000": {
+      "kind": "hgb",
+      "columns": [
+        "hour",
+        "day_of_week",
+        "month",
+        "weekend",
+        "Start_Lat",
+        "Start_Lng",
+        "State",
+        "Timezone",
+        "Amenity",
+        "Bump",
+        "Crossing",
+        "Give_Way",
+        "Junction",
+        "No_Exit",
+        "Railway",
+        "Roundabout",
+        "Station",
+        "Stop",
+        "Traffic_Calming",
+        "Traffic_Signal",
+        "Sunrise_Sunset",
+        "Civil_Twilight",
+        "Nautical_Twilight",
+        "Astronomical_Twilight",
+        "Temperature(F)",
+        "Wind_Chill(F)",
+        "Humidity(%)",
+        "Pressure(in)",
+        "Visibility(mi)",
+        "Wind_Speed(mph)",
+        "Precipitation(in)",
+        "Wind_Direction",
+        "Weather_Condition"
+      ],
+      "parameters": {
+        "max_leaf_nodes": 31,
+        "max_iter": 200
+      }
+    },
+    "train_size_200000": {
+      "kind": "hgb",
+      "columns": [
+        "hour",
+        "day_of_week",
+        "month",
+        "weekend",
+        "Start_Lat",
+        "Start_Lng",
+        "State",
+        "Timezone",
+        "Amenity",
+        "Bump",
+        "Crossing",
+        "Give_Way",
+        "Junction",
+        "No_Exit",
+        "Railway",
+        "Roundabout",
+        "Station",
+        "Stop",
+        "Traffic_Calming",
+        "Traffic_Signal",
+        "Sunrise_Sunset",
+        "Civil_Twilight",
+        "Nautical_Twilight",
+        "Astronomical_Twilight",
+        "Temperature(F)",
+        "Wind_Chill(F)",
+        "Humidity(%)",
+        "Pressure(in)",
+        "Visibility(mi)",
+        "Wind_Speed(mph)",
+        "Precipitation(in)",
+        "Wind_Direction",
+        "Weather_Condition"
+      ],
+      "parameters": {
+        "max_leaf_nodes": 31,
+        "max_iter": 200
+      }
+    },
+    "missingness_only": {
+      "kind": "hgb",
+      "columns": [
+        "Timezone",
+        "Sunrise_Sunset",
+        "Civil_Twilight",
+        "Nautical_Twilight",
+        "Astronomical_Twilight",
+        "Temperature(F)",
+        "Wind_Chill(F)",
+        "Humidity(%)",
+        "Pressure(in)",
+        "Visibility(mi)",
+        "Wind_Speed(mph)",
+        "Precipitation(in)",
+        "Wind_Direction",
+        "Weather_Condition"
+      ],
+      "parameters": {
+        "max_leaf_nodes": 31,
+        "max_iter": 200
+      }
+    },
+    "shuffled_labels_control": {
+      "kind": "hgb",
+      "columns": [
+        "hour",
+        "day_of_week",
+        "month",
+        "weekend",
+        "Start_Lat",
+        "Start_Lng",
+        "State",
+        "Timezone",
+        "Amenity",
+        "Bump",
+        "Crossing",
+        "Give_Way",
+        "Junction",
+        "No_Exit",
+        "Railway",
+        "Roundabout",
+        "Station",
+        "Stop",
+        "Traffic_Calming",
+        "Traffic_Signal",
+        "Sunrise_Sunset",
+        "Civil_Twilight",
+        "Nautical_Twilight",
+        "Astronomical_Twilight",
+        "Temperature(F)",
+        "Wind_Chill(F)",
+        "Humidity(%)",
+        "Pressure(in)",
+        "Visibility(mi)",
+        "Wind_Speed(mph)",
+        "Precipitation(in)",
+        "Wind_Direction",
+        "Weather_Condition"
+      ],
+      "parameters": {
+        "max_leaf_nodes": 31,
+        "max_iter": 200
+      }
+    },
+    "near_deduplicated_train": {
+      "kind": "hgb",
+      "columns": [
+        "hour",
+        "day_of_week",
+        "month",
+        "weekend",
+        "Start_Lat",
+        "Start_Lng",
+        "State",
+        "Timezone",
+        "Amenity",
+        "Bump",
+        "Crossing",
+        "Give_Way",
+        "Junction",
+        "No_Exit",
+        "Railway",
+        "Roundabout",
+        "Station",
+        "Stop",
+        "Traffic_Calming",
+        "Traffic_Signal",
+        "Sunrise_Sunset",
+        "Civil_Twilight",
+        "Nautical_Twilight",
+        "Astronomical_Twilight",
+        "Temperature(F)",
+        "Wind_Chill(F)",
+        "Humidity(%)",
+        "Pressure(in)",
+        "Visibility(mi)",
+        "Wind_Speed(mph)",
+        "Precipitation(in)",
+        "Wind_Direction",
+        "Weather_Condition"
+      ],
+      "parameters": {
+        "max_leaf_nodes": 31,
+        "max_iter": 200
+      }
+    },
+    "diagnostic_Distance(mi)": {
+      "kind": "one",
+      "columns": [
+        "Distance(mi)"
+      ],
+      "parameters": {},
+      "rule": {
+        "variable": "Distance(mi)",
+        "kind": "threshold",
+        "threshold": 0.00499999988824125,
+        "p_below_or_equal": 0.31323713474928006,
+        "p_above": 0.48413217729560304,
+        "missing_imputed": 0.0
+      }
+    },
+    "diagnostic_duration_min": {
+      "kind": "one",
+      "columns": [
+        "duration_min"
+      ],
+      "parameters": {},
+      "rule": {
+        "variable": "duration_min",
+        "kind": "threshold",
+        "threshold": 29.675,
+        "p_below_or_equal": 0.4746660568465807,
+        "p_above": 0.303969452536116,
+        "missing_imputed": 42.43333333333333
+      }
+    },
+    "diagnostic_full_future": {
+      "kind": "hgb",
+      "columns": [
+        "hour",
+        "day_of_week",
+        "month",
+        "weekend",
+        "Start_Lat",
+        "Start_Lng",
+        "State",
+        "Timezone",
+        "Amenity",
+        "Bump",
+        "Crossing",
+        "Give_Way",
+        "Junction",
+        "No_Exit",
+        "Railway",
+        "Roundabout",
+        "Station",
+        "Stop",
+        "Traffic_Calming",
+        "Traffic_Signal",
+        "Sunrise_Sunset",
+        "Civil_Twilight",
+        "Nautical_Twilight",
+        "Astronomical_Twilight",
+        "Temperature(F)",
+        "Wind_Chill(F)",
+        "Humidity(%)",
+        "Pressure(in)",
+        "Visibility(mi)",
+        "Wind_Speed(mph)",
+        "Precipitation(in)",
+        "Wind_Direction",
+        "Weather_Condition",
+        "Distance(mi)",
+        "duration_min"
+      ],
+      "parameters": {
+        "max_leaf_nodes": 31,
+        "max_iter": 200
+      }
+    }
+  },
+  "decision_rule": "delta recall10 >= 0.05, paired weekly CI lower > 0, and no AP decrease",
+  "test_used_for_selection": false,
+  "bootstrap_draws": 500,
+  "versions": {
+    "sklearn": "1.7.2",
+    "numpy": "2.3.5",
+    "pandas": "3.0.1"
+  }
+}

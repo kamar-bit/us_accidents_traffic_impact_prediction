@@ -1,0 +1,591 @@
+{
+  "hour": {
+    "kind": "one",
+    "columns": [
+      "hour"
+    ],
+    "parameters": {},
+    "rule": {
+      "variable": "hour",
+      "kind": "threshold",
+      "threshold": 12.5,
+      "p_below_or_equal": 0.3155162513408969,
+      "p_above": 0.37880188027313766,
+      "missing_imputed": 11.0
+    }
+  },
+  "day_of_week": {
+    "kind": "one",
+    "columns": [
+      "day_of_week"
+    ],
+    "parameters": {},
+    "rule": {
+      "variable": "day_of_week",
+      "kind": "threshold",
+      "threshold": 4.5,
+      "p_below_or_equal": 0.3207387166709378,
+      "p_above": 0.5474023179574964,
+      "missing_imputed": 2.0
+    }
+  },
+  "month": {
+    "kind": "one",
+    "columns": [
+      "month"
+    ],
+    "parameters": {},
+    "rule": {
+      "variable": "month",
+      "kind": "threshold",
+      "threshold": 7.5,
+      "p_below_or_equal": 0.35510773849357813,
+      "p_above": 0.33284154054561166,
+      "missing_imputed": 7.0
+    }
+  },
+  "weekend": {
+    "kind": "one",
+    "columns": [
+      "weekend"
+    ],
+    "parameters": {},
+    "rule": {
+      "variable": "weekend",
+      "kind": "threshold",
+      "threshold": 0.5,
+      "p_below_or_equal": 0.3207387166709378,
+      "p_above": 0.5474023179574964,
+      "missing_imputed": 0.0
+    }
+  },
+  "Start_Lat": {
+    "kind": "one",
+    "columns": [
+      "Start_Lat"
+    ],
+    "parameters": {},
+    "rule": {
+      "variable": "Start_Lat",
+      "kind": "threshold",
+      "threshold": 37.5741675,
+      "p_below_or_equal": 0.3109739065217152,
+      "p_above": 0.39413985250328654,
+      "missing_imputed": 35.417732
+    }
+  },
+  "Start_Lng": {
+    "kind": "one",
+    "columns": [
+      "Start_Lng"
+    ],
+    "parameters": {},
+    "rule": {
+      "variable": "Start_Lng",
+      "kind": "threshold",
+      "threshold": -112.4849395,
+      "p_below_or_equal": 0.4234291546652567,
+      "p_above": 0.32110009946592016,
+      "missing_imputed": -87.89624
+    }
+  },
+  "State": {
+    "kind": "one",
+    "columns": [
+      "State"
+    ],
+    "parameters": {},
+    "rule": {
+      "variable": "State",
+      "kind": "smoothed_category_rate",
+      "rates": {
+        "AL": 0.3272502705555599,
+        "AZ": 0.20061720299794805,
+        "CA": 0.43181991946491305,
+        "CO": 0.3350461841958761,
+        "CT": 0.5950389313990365,
+        "DC": 0.28872893391704313,
+        "DE": 0.1036304624420058,
+        "FL": 0.3560712075361491,
+        "GA": 0.5800110476219571,
+        "IA": 0.5436626649087851,
+        "IL": 0.1932707134633939,
+        "IN": 0.3161399308437464,
+        "KS": 0.6822923003503907,
+        "KY": 0.5495902033081593,
+        "LA": 0.18760038441467672,
+        "MA": 0.4341651628807079,
+        "MD": 0.5102268180513835,
+        "MI": 0.4103004138823489,
+        "MN": 0.5324764117387236,
+        "MO": 0.6987567472083936,
+        "MS": 0.5059676291758942,
+        "NC": 0.1405154007215619,
+        "NE": 0.15157307368195777,
+        "NH": 0.31458124627306555,
+        "NJ": 0.31808229990495807,
+        "NM": 0.4101866056404073,
+        "NV": 0.39751298444965744,
+        "NY": 0.4171414633572259,
+        "OH": 0.391981767396888,
+        "OK": 0.09383665987066077,
+        "OR": 0.28731702254776564,
+        "Other": 0.6115965053509478,
+        "PA": 0.21979755086601044,
+        "RI": 0.6392853886814386,
+        "SC": 0.2179364956821643,
+        "TN": 0.3476370772228193,
+        "TX": 0.24814181079652997,
+        "UT": 0.5299018970011238,
+        "VA": 0.47941638075887977,
+        "WA": 0.3879811172454877,
+        "WI": 0.5016650400945064
+      },
+      "unknown_rate": 0.3440667203336017,
+      "smoothing": 50
+    }
+  },
+  "Timezone": {
+    "kind": "one",
+    "columns": [
+      "Timezone"
+    ],
+    "parameters": {},
+    "rule": {
+      "variable": "Timezone",
+      "kind": "smoothed_category_rate",
+      "rates": {
+        "Missing": 0.2760166800834004,
+        "US/Central": 0.2817010741104661,
+        "US/Eastern": 0.34791311262143476,
+        "US/Mountain": 0.2862386876701223,
+        "US/Pacific": 0.42329631621791747
+      },
+      "unknown_rate": 0.3440667203336017,
+      "smoothing": 50
+    }
+  },
+  "Amenity": {
+    "kind": "one",
+    "columns": [
+      "Amenity"
+    ],
+    "parameters": {},
+    "rule": {
+      "variable": "Amenity",
+      "kind": "threshold",
+      "threshold": 0.5,
+      "p_below_or_equal": 0.34916349882103126,
+      "p_above": 0.04299109457120387,
+      "missing_imputed": 0.0
+    }
+  },
+  "Bump": {
+    "kind": "one",
+    "columns": [
+      "Bump"
+    ],
+    "parameters": {},
+    "rule": {
+      "variable": "Bump",
+      "kind": "threshold",
+      "threshold": 0.0,
+      "p_below_or_equal": 0.3440667203336017,
+      "p_above": 0.3440667203336017,
+      "missing_imputed": 0.0
+    }
+  },
+  "Crossing": {
+    "kind": "one",
+    "columns": [
+      "Crossing"
+    ],
+    "parameters": {},
+    "rule": {
+      "variable": "Crossing",
+      "kind": "threshold",
+      "threshold": 0.5,
+      "p_below_or_equal": 0.3925810667092739,
+      "p_above": 0.07659668433099018,
+      "missing_imputed": 0.0
+    }
+  },
+  "Give_Way": {
+    "kind": "one",
+    "columns": [
+      "Give_Way"
+    ],
+    "parameters": {},
+    "rule": {
+      "variable": "Give_Way",
+      "kind": "threshold",
+      "threshold": 0.0,
+      "p_below_or_equal": 0.3440667203336017,
+      "p_above": 0.3440667203336017,
+      "missing_imputed": 0.0
+    }
+  },
+  "Junction": {
+    "kind": "one",
+    "columns": [
+      "Junction"
+    ],
+    "parameters": {},
+    "rule": {
+      "variable": "Junction",
+      "kind": "threshold",
+      "threshold": 0.5,
+      "p_below_or_equal": 0.3292889280679676,
+      "p_above": 0.6085957623516275,
+      "missing_imputed": 0.0
+    }
+  },
+  "No_Exit": {
+    "kind": "one",
+    "columns": [
+      "No_Exit"
+    ],
+    "parameters": {},
+    "rule": {
+      "variable": "No_Exit",
+      "kind": "threshold",
+      "threshold": 0.0,
+      "p_below_or_equal": 0.3440667203336017,
+      "p_above": 0.3440667203336017,
+      "missing_imputed": 0.0
+    }
+  },
+  "Railway": {
+    "kind": "one",
+    "columns": [
+      "Railway"
+    ],
+    "parameters": {},
+    "rule": {
+      "variable": "Railway",
+      "kind": "threshold",
+      "threshold": 0.5,
+      "p_below_or_equal": 0.3455538051251821,
+      "p_above": 0.20068322104025318,
+      "missing_imputed": 0.0
+    }
+  },
+  "Roundabout": {
+    "kind": "one",
+    "columns": [
+      "Roundabout"
+    ],
+    "parameters": {},
+    "rule": {
+      "variable": "Roundabout",
+      "kind": "threshold",
+      "threshold": 0.0,
+      "p_below_or_equal": 0.3440667203336017,
+      "p_above": 0.3440667203336017,
+      "missing_imputed": 0.0
+    }
+  },
+  "Station": {
+    "kind": "one",
+    "columns": [
+      "Station"
+    ],
+    "parameters": {},
+    "rule": {
+      "variable": "Station",
+      "kind": "threshold",
+      "threshold": 0.5,
+      "p_below_or_equal": 0.35115307750035607,
+      "p_above": 0.10625273506332988,
+      "missing_imputed": 0.0
+    }
+  },
+  "Stop": {
+    "kind": "one",
+    "columns": [
+      "Stop"
+    ],
+    "parameters": {},
+    "rule": {
+      "variable": "Stop",
+      "kind": "threshold",
+      "threshold": 0.5,
+      "p_below_or_equal": 0.35446373452188085,
+      "p_above": 0.05330100405568617,
+      "missing_imputed": 0.0
+    }
+  },
+  "Traffic_Calming": {
+    "kind": "one",
+    "columns": [
+      "Traffic_Calming"
+    ],
+    "parameters": {},
+    "rule": {
+      "variable": "Traffic_Calming",
+      "kind": "threshold",
+      "threshold": 0.0,
+      "p_below_or_equal": 0.3440667203336017,
+      "p_above": 0.3440667203336017,
+      "missing_imputed": 0.0
+    }
+  },
+  "Traffic_Signal": {
+    "kind": "one",
+    "columns": [
+      "Traffic_Signal"
+    ],
+    "parameters": {},
+    "rule": {
+      "variable": "Traffic_Signal",
+      "kind": "threshold",
+      "threshold": 0.5,
+      "p_below_or_equal": 0.4200043302370089,
+      "p_above": 0.09609915023910044,
+      "missing_imputed": 0.0
+    }
+  },
+  "Sunrise_Sunset": {
+    "kind": "one",
+    "columns": [
+      "Sunrise_Sunset"
+    ],
+    "parameters": {},
+    "rule": {
+      "variable": "Sunrise_Sunset",
+      "kind": "smoothed_category_rate",
+      "rates": {
+        "Day": 0.3316927459978629,
+        "Missing": 0.33083338493615544,
+        "Night": 0.38056082823970877
+      },
+      "unknown_rate": 0.3440667203336017,
+      "smoothing": 50
+    }
+  },
+  "Civil_Twilight": {
+    "kind": "one",
+    "columns": [
+      "Civil_Twilight"
+    ],
+    "parameters": {},
+    "rule": {
+      "variable": "Civil_Twilight",
+      "kind": "smoothed_category_rate",
+      "rates": {
+        "Day": 0.3322771170367887,
+        "Missing": 0.33083338493615544,
+        "Night": 0.39039909694622366
+      },
+      "unknown_rate": 0.3440667203336017,
+      "smoothing": 50
+    }
+  },
+  "Nautical_Twilight": {
+    "kind": "one",
+    "columns": [
+      "Nautical_Twilight"
+    ],
+    "parameters": {},
+    "rule": {
+      "variable": "Nautical_Twilight",
+      "kind": "smoothed_category_rate",
+      "rates": {
+        "Day": 0.33369035755115733,
+        "Missing": 0.33083338493615544,
+        "Night": 0.40170290575730827
+      },
+      "unknown_rate": 0.3440667203336017,
+      "smoothing": 50
+    }
+  },
+  "Astronomical_Twilight": {
+    "kind": "one",
+    "columns": [
+      "Astronomical_Twilight"
+    ],
+    "parameters": {},
+    "rule": {
+      "variable": "Astronomical_Twilight",
+      "kind": "smoothed_category_rate",
+      "rates": {
+        "Day": 0.3357742973673552,
+        "Missing": 0.33083338493615544,
+        "Night": 0.40741458443816325
+      },
+      "unknown_rate": 0.3440667203336017,
+      "smoothing": 50
+    }
+  },
+  "Temperature(F)": {
+    "kind": "one",
+    "columns": [
+      "Temperature(F)"
+    ],
+    "parameters": {},
+    "rule": {
+      "variable": "Temperature(F)",
+      "kind": "threshold",
+      "threshold": 73.95,
+      "p_below_or_equal": 0.34710906539009967,
+      "p_above": 0.3264349431507397,
+      "missing_imputed": 64.9
+    }
+  },
+  "Wind_Chill(F)": {
+    "kind": "one",
+    "columns": [
+      "Wind_Chill(F)"
+    ],
+    "parameters": {},
+    "rule": {
+      "variable": "Wind_Chill(F)",
+      "kind": "threshold",
+      "threshold": 53.5,
+      "p_below_or_equal": 0.34831923539746723,
+      "p_above": 0.3005225712529731,
+      "missing_imputed": 53.0
+    }
+  },
+  "Humidity(%)": {
+    "kind": "one",
+    "columns": [
+      "Humidity(%)"
+    ],
+    "parameters": {},
+    "rule": {
+      "variable": "Humidity(%)",
+      "kind": "threshold",
+      "threshold": 78.5,
+      "p_below_or_equal": 0.3459022174315616,
+      "p_above": 0.33556296866865637,
+      "missing_imputed": 69.0
+    }
+  },
+  "Pressure(in)": {
+    "kind": "one",
+    "columns": [
+      "Pressure(in)"
+    ],
+    "parameters": {},
+    "rule": {
+      "variable": "Pressure(in)",
+      "kind": "threshold",
+      "threshold": 29.705,
+      "p_below_or_equal": 0.3063270464376674,
+      "p_above": 0.3475153581282101,
+      "missing_imputed": 29.99
+    }
+  },
+  "Visibility(mi)": {
+    "kind": "one",
+    "columns": [
+      "Visibility(mi)"
+    ],
+    "parameters": {},
+    "rule": {
+      "variable": "Visibility(mi)",
+      "kind": "threshold",
+      "threshold": 6.5,
+      "p_below_or_equal": 0.36623296077588713,
+      "p_above": 0.3426548548829541,
+      "missing_imputed": 10.0
+    }
+  },
+  "Wind_Speed(mph)": {
+    "kind": "one",
+    "columns": [
+      "Wind_Speed(mph)"
+    ],
+    "parameters": {},
+    "rule": {
+      "variable": "Wind_Speed(mph)",
+      "kind": "threshold",
+      "threshold": 5.4,
+      "p_below_or_equal": 0.3180450633472146,
+      "p_above": 0.34757523513975147,
+      "missing_imputed": 7.0
+    }
+  },
+  "Precipitation(in)": {
+    "kind": "one",
+    "columns": [
+      "Precipitation(in)"
+    ],
+    "parameters": {},
+    "rule": {
+      "variable": "Precipitation(in)",
+      "kind": "threshold",
+      "threshold": 0.005,
+      "p_below_or_equal": 0.34150932417417423,
+      "p_above": 0.4138901465370127,
+      "missing_imputed": 0.0
+    }
+  },
+  "Wind_Direction": {
+    "kind": "one",
+    "columns": [
+      "Wind_Direction"
+    ],
+    "parameters": {},
+    "rule": {
+      "variable": "Wind_Direction",
+      "kind": "smoothed_category_rate",
+      "rates": {
+        "Calm": 0.3279081112855966,
+        "E": 0.3548063511355575,
+        "ENE": 0.3262761969207237,
+        "ESE": 0.3620575273652075,
+        "Missing": 0.34399129284873015,
+        "N": 0.33755410974954597,
+        "NE": 0.3347311527028359,
+        "NNE": 0.30869536930854913,
+        "NNW": 0.34464808485857923,
+        "NW": 0.3584070350299212,
+        "S": 0.32245538846216837,
+        "SE": 0.3469495010751285,
+        "SSE": 0.3283387782802532,
+        "SSW": 0.3462441858185204,
+        "SW": 0.3587016617681128,
+        "Variable": 0.3198344042343559,
+        "W": 0.38418974841556264,
+        "WNW": 0.3869666240864653,
+        "WSW": 0.3852142328127371
+      },
+      "unknown_rate": 0.3440667203336017,
+      "smoothing": 50
+    }
+  },
+  "Weather_Condition": {
+    "kind": "one",
+    "columns": [
+      "Weather_Condition"
+    ],
+    "parameters": {},
+    "rule": {
+      "variable": "Weather_Condition",
+      "kind": "smoothed_category_rate",
+      "rates": {
+        "Clear": 0.33850713102464336,
+        "Cloudy": 0.29098318196905,
+        "Fair": 0.27941586889294895,
+        "Fog": 0.25607866357088793,
+        "Haze": 0.38084117708869125,
+        "Heavy Rain": 0.4507799912067993,
+        "Light Drizzle": 0.34019936846095716,
+        "Light Rain": 0.38903020615163353,
+        "Light Snow": 0.4315202149721714,
+        "Light Thunderstorms and Rain": 0.44258367878184773,
+        "Missing": 0.34482620210138987,
+        "Mostly Cloudy": 0.3575644727924449,
+        "Other": 0.3968238523919426,
+        "Overcast": 0.3433393580854492,
+        "Partly Cloudy": 0.34923636268764374,
+        "Rain": 0.45929259786678783,
+        "Scattered Clouds": 0.35418397807511254
+      },
+      "unknown_rate": 0.3440667203336017,
+      "smoothing": 50
+    }
+  }
+}

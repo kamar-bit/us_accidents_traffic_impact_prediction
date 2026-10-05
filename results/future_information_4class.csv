@@ -1,0 +1,23 @@
+variable,validation_accuracy_4class,rule
+Distance(mi),0.70568,"|--- Distance(mi) <= 0.2650
+|   |--- Distance(mi) <= 0.0050
+|   |   |--- class: 2
+|   |--- Distance(mi) >  0.0050
+|   |   |--- class: 2
+|--- Distance(mi) >  0.2650
+|   |--- Distance(mi) <= 2.3850
+|   |   |--- class: 3
+|   |--- Distance(mi) >  2.3850
+|   |   |--- class: 3
+"
+duration_min,0.6972,"|--- duration_min <= 29.6750
+|   |--- class: 2
+|--- duration_min >  29.6750
+|   |--- duration_min <= 29.9417
+|   |   |--- class: 2
+|   |--- duration_min >  29.9417
+|   |   |--- duration_min <= 44.7083
+|   |   |   |--- class: 2
+|   |   |--- duration_min >  44.7083
+|   |   |   |--- class: 2
+"

@@ -1,0 +1,16 @@
+family,parameters,ap
+logistic_one,"{""C"": 0.1}",0.4082301755004365
+logistic_one,"{""C"": 1.0}",0.4093991019200048
+logistic_one,"{""C"": 10.0}",0.4096366453081113
+logistic_pair,"{""C"": 0.1}",0.4405678399508266
+logistic_pair,"{""C"": 1.0}",0.4405678399508266
+logistic_pair,"{""C"": 10.0}",0.4405678399508266
+logistic_full,"{""C"": 0.1}",0.5508683835442182
+logistic_full,"{""C"": 1.0}",0.5494752711474933
+logistic_full,"{""C"": 10.0}",0.5501815575705253
+hgb_full,"{""max_leaf_nodes"": 7, ""max_iter"": 100}",0.6220004793432368
+hgb_full,"{""max_leaf_nodes"": 7, ""max_iter"": 200}",0.6431631232267033
+hgb_full,"{""max_leaf_nodes"": 15, ""max_iter"": 100}",0.6540815817427482
+hgb_full,"{""max_leaf_nodes"": 15, ""max_iter"": 200}",0.6770093865184785
+hgb_full,"{""max_leaf_nodes"": 31, ""max_iter"": 100}",0.6799410329810666
+hgb_full,"{""max_leaf_nodes"": 31, ""max_iter"": 200}",0.6969479638987052

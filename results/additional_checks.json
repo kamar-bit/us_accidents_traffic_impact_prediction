@@ -1,0 +1,11 @@
+{
+  "recall_selected_simple_competitor": "hgb_pair_4",
+  "selection_data": "2020 validation only; sensitivity, not replacement of predeclared AP selection",
+  "extra_shuffle_seeds": [
+    321,
+    456,
+    789,
+    999
+  ],
+  "predeclared_ap_selection_unchanged": true
+}

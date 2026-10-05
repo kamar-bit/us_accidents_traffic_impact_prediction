@@ -1,0 +1,23 @@
+# Donnees et sorties volumineuses (regenerables, ne jamais versionner)
+data/*
+!data/README.md
+artifacts/
+dist/
+*.csv.zip
+*.pkl
+*.joblib
+
+# Python
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+.mplcache/
+.venv/
+venv/
+.pytest_cache/
+
+# Editeur / systeme
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

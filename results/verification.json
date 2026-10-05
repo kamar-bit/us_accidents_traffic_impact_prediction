@@ -1,0 +1,14 @@
+{
+  "disjoint_ids": true,
+  "disjoint_events": true,
+  "source2_only": true,
+  "train_fitted_categories": true,
+  "test_selection": false,
+  "weather_window_minutes": [
+    0,
+    120
+  ],
+  "test_metrics_computed_after_freeze": true,
+  "paired_bootstrap_draws": 500,
+  "elapsed_seconds": 314.9081690311432
+}
