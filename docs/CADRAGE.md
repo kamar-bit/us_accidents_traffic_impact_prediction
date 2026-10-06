@@ -52,6 +52,10 @@ ni un effet causal des variables.
 
 Un notebook en anglais sous 10 Mo avec question, cible documentée, préparation,
 modèle complet, références, évaluation temporelle et limites.
-Joindre les modules utilisés, pas le dataset. Le notebook du dépôt GitHub
-reprend déjà le cadrage du modèle complet. Il reste conservé sans modification directe.
+Joindre les modules utilisés, pas le dataset. Le
+[notebook principal](../notebooks/MAIN_NoteBook.ipynb) contient les sorties
+vérifiées le 6 octobre 2026 : 16 cellules sans erreur, 21 tests et 27 contrôles
+réussis. Il reproduit le modèle complet et la référence constante ; les autres
+comparaisons du rapport restent celles des expériences historiques.
+Voir le [bilan de validation](MAIN_NOTEBOOK_VALIDATION.md).
 Ce recadrage du récit intervient après les scores et ne les modifie pas.

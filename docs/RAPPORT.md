@@ -16,6 +16,65 @@ Le modèle principal est le boosting complet à 33 variables admissibles. Les r�
 
 AP et AUC sont des mesures de classement, pas des pourcentages de prédictions correctes. Dans les 10 % de scores les plus élevés sur 2021, 80.13 % des événements sont positifs ; ce budget retrouve 23.38 % de tous les positifs. Le modèle n'identifie donc pas tous les incidents d'impact supérieur. Les probabilités n'ont pas été validées par calibration.
 
+## Reproduction dans le notebook principal, 6 octobre 2026
+
+Le [notebook principal MAIN_NoteBook.ipynb](../notebooks/MAIN_NoteBook.ipynb)
+réexécute la préparation, l'entraînement du gradient boosting complet à
+33 variables et l'évaluation de la référence constante. Il relit les
+7 728 394 lignes du CSV et utilise 199 999 événements d'apprentissage.
+Les paramètres historiques sont conservés, sans nouvelle recherche de modèle.
+
+| Période | Modèle | Événements | AP | ROC-AUC | Rappel, top 10 % | Précision, top 10 % |
+| --- | --- | ---: | ---: | ---: | ---: | ---: |
+| Validation 2020 | Constante | 50 000 | 0,3025 | 0,5000 | 10,21 % | 30,88 % |
+| Validation 2020 | Gradient boosting complet | 50 000 | 0,6969 | 0,8496 | 26,40 % | 79,86 % |
+| Test historique 2021 | Constante | 99 999 | 0,3427 | 0,5000 | 9,77 % | 33,50 % |
+| Test historique 2021 | Gradient boosting complet | 99 999 | 0,7031 | 0,8362 | 23,38 % | 80,13 % |
+| Stabilité 2022, jusqu'au 8 septembre | Constante | 50 000 | 0,3470 | 0,5000 | 10,19 % | 35,34 % |
+| Stabilité 2022, jusqu'au 8 septembre | Gradient boosting complet | 50 000 | 0,7092 | 0,8351 | 23,35 % | 81,00 % |
+
+Les six lignes reproduisent les effectifs, prévalences et métriques historiques
+avec une tolérance absolue de 1e-9. Les années 2021 et 2022 avaient déjà été
+consultées ; cette reproduction ne constitue pas une nouvelle évaluation indépendante.
+Les autres modèles et ablations présentés plus loin proviennent des expériences
+historiques et n'ont pas été réentraînés par ce notebook.
+
+### Exécution et vérifications
+
+Les 16 cellules de code ont terminé sans erreur ni sortie stderr. Les 21 tests
+unitaires et les 27 contrôles de cohérence passent : cible, périodes disjointes,
+variables admissibles, disponibilité météo, comptage des transformations et
+accord avec les résultats historiques. Le fichier exécuté fait 332 357 octets,
+soit environ 0,33 Mo lors de la validation automatisée, sous la limite de 10 Mo.
+Après la relance manuelle suivante, le fichier fait 324 056 octets et conserve
+16 cellules exécutées sans erreur ainsi que les mêmes scores.
+
+L'exécution complète a duré 244,26 secondes, reconstruction des caches comprise ;
+l'entraînement du modèle a duré 4,92 secondes lors de cette validation et
+5,53 secondes lors de la relance manuelle suivante. Environnement vérifié :
+Python 3.10.11, NumPy 2.2.6, pandas 2.3.3, scikit-learn 1.7.2 et matplotlib 3.10.8.
+Les anciens caches pandas 3.0.1 provoquaient une erreur `StringDtype` sous pandas
+2.3.3. La signature intègre maintenant les versions de Python, pandas et NumPy
+pour reconstruire automatiquement les caches après un changement d'environnement.
+
+Les scores complets, les contrôles, les versions et les audits avant/après sont
+exportés dans `data/main_notebook/reports/` ; les quatre figures sont dans
+`data/main_notebook/figures/`. Voir le [bilan de validation](MAIN_NOTEBOOK_VALIDATION.md)
+et les [commandes de reproduction](MODE_EMPLOI.md#exécuter-le-notebook-principal).
+
+### Diagnostic des catégories météo exécuté
+
+Le vocabulaire appris sur 2016-2019 reste figé. Dans `Weather_Condition`,
+les catégories inédites concernent 6 événements en 2020, 12 en 2021 et 7 en 2022.
+Ces groupes restent sous le seuil de 100 événements requis pour calculer leurs
+métriques. Les catégories connues mais regroupées concernent respectivement
+1 126, 1 954 et 1 081 événements. Sur 2021, l'AP vaut 0,7160 pour les catégories
+conservées, 0,7407 pour les connues regroupées et 0,6937 pour les valeurs manquantes.
+Ces groupes ont des prévalences différentes ; leurs scores ne mesurent pas un
+effet causal du regroupement. Le top 10 % est sélectionné au sein de chaque groupe.
+Voir les [effectifs et limites du diagnostic](DICTIONNAIRE_ET_FUITES.md#dérive-des-catégories-météo).
+Les plafonds alternatifs de 10, 15 et 25 catégories restent à comparer sur la validation.
+
 ## Documentation de la cible confirmée
 
 Voir [DOCUMENTATION_CIBLE.md](DOCUMENTATION_CIBLE.md). Son contenu est repris ici pour que le rapport reste autonome.
@@ -241,4 +300,4 @@ La contribution du projet est une prédiction par modèle complet avec évaluati
 
 Limites : fournisseur unique, informations de trafic et type exact de route absents, disponibilité au signalement non garantie, observations limitées aux accidents collectés. Une faible performance ne prouve pas l'absence de signal ni l'inutilité universelle du ML. La fréquence du trafic et le nombre d'accidents sans exposition routière ne permettent pas d'estimer le risque de circulation.
 
-Les cellules actualisées en anglais sont proposées dans [CELLULES_NOTEBOOK.md](CELLULES_NOTEBOOK.md). Le [notebook du dépôt GitHub](../notebooks/traffic_impact_study.ipynb) reprend déjà le récit du modèle complet ; le notebook du dossier local antérieur garde son ancien récit. Aucun notebook n'est modifié par la consolidation documentaire. Avant remise, ajouter les noms des membres, vérifier le rendu et l'archive, joindre les modules et exclure le CSV et les caches. Limite du notebook : 10 Mo. Voir le [mode d'emploi](MODE_EMPLOI.md) pour les commandes et la régénération des documents.
+Le [notebook principal](../notebooks/MAIN_NoteBook.ipynb) contient les sorties vérifiées de la reproduction du 6 octobre 2026. Le [notebook historique](../notebooks/traffic_impact_study.ipynb) et ses [cellules proposées](CELLULES_NOTEBOOK.md) restent disponibles. Avant remise, ajouter les noms des membres, vérifier le rendu et l'archive, joindre les modules et exclure le CSV et les caches. Limite du notebook : 10 Mo. Voir le [mode d'emploi](MODE_EMPLOI.md) pour les commandes et la régénération des documents.

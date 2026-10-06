@@ -2,13 +2,15 @@
 
 ## Lire le dossier
 
-Commencer par le [cadrage](CADRAGE.md), la [définition de la cible](DOCUMENTATION_CIBLE.md),
+Commencer par le [notebook principal exécuté](../notebooks/MAIN_NoteBook.ipynb),
+puis le [cadrage](CADRAGE.md), la [définition de la cible](DOCUMENTATION_CIBLE.md),
 le [dictionnaire](DICTIONNAIRE_ET_FUITES.md) et le [protocole](PROTOCOLE.md).
 Le [rapport](RAPPORT.md) présente les résultats réels ; l'[état de l'art](ETAT_DE_L_ART.md)
 explicite la portée des références consultées. Les [consignes](CONSIGNES_PROJET.md)
 reprennent le rappel fourni par le groupe.
 
-Dans ce dépôt, les sorties sont `results/` et `figures/`. L'ancien dossier
+Dans ce dépôt, les sorties historiques sont `results/` et `figures/`. Le notebook
+principal écrit ses rapports et figures dans `data/main_notebook/`. L'ancien dossier
 local `etude_simplicite/` ne doit pas être recréé : ses fichiers ont ici des
 emplacements adaptés au paquet `traffic_impact/`.
 
@@ -69,13 +71,48 @@ Les dépendances locales de l'ancien dossier ne sont pas transférées. Les anci
 modèles sérialisés utilisent des noms de modules différents : ne pas les copier
 directement dans `artifacts/`. La reproduction doit utiliser le paquet du dépôt.
 
+## Exécuter le notebook principal
+
+Depuis la racine du dépôt, après création de l'environnement et mise à disposition
+du CSV dans `data/US_Accidents_March23.csv` ou `../../US_Accidents_March23.csv` :
+
+```powershell
+.\.venv\Scripts\python.exe -m pip install -r requirements-main-notebook.txt
+.\.venv\Scripts\python.exe -m unittest discover -s tests -t . -v
+.\.venv\Scripts\python.exe scripts/validate_main_notebook.py --execute
+```
+
+Le validateur ouvre un nouveau noyau Jupyter avec le Python utilisé pour cette
+commande, exécute toutes les cellules et sauvegarde les sorties dans
+`notebooks/MAIN_NoteBook.ipynb` après réussite. Si le notebook est modifié pendant
+l'exécution, le validateur refuse d'écraser ces modifications.
+Pour vérifier sa structure et ses sorties enregistrées sans réexécution,
+utiliser `scripts/validate_main_notebook.py` sans `--execute`.
+
+Le notebook audite le CSV et construit ses propres échantillons sous
+`data/main_notebook/data/cache/`. Il réutilise un cache seulement si le CSV,
+le code de préparation, les paramètres, les versions de Python/pandas/NumPy et
+les empreintes des fichiers correspondent. Les caches anciens, corrompus ou
+issus d'un autre environnement sont reconstruits automatiquement.
+Les tableaux sont exportés dans `data/main_notebook/reports/` et les figures dans
+`data/main_notebook/figures/`. Ces fichiers sont ignorés par Git.
+
+La validation automatisée du 6 octobre 2026 a terminé les 16 cellules
+sans erreur, avec 21 tests unitaires et 27 contrôles de cohérence réussis.
+Elle a duré 244,26 secondes, dont 4,92 secondes d'entraînement, reconstruction
+des caches comprise. La relance manuelle suivante conserve les mêmes scores et
+les 27 contrôles réussis, avec 5,53 secondes d'entraînement.
+Versions vérifiées : Python 3.10.11, NumPy 2.2.6,
+pandas 2.3.3, scikit-learn 1.7.2, matplotlib 3.10.8.
+Voir le [bilan de validation](MAIN_NOTEBOOK_VALIDATION.md) et les
+[résultats reproduits](RAPPORT.md#reproduction-dans-le-notebook-principal-6-octobre-2026).
+
 ## Notebook et remise
 
-Le [notebook GitHub](../notebooks/traffic_impact_study.ipynb) reprend déjà le récit
-du modèle complet. Le notebook local antérieur conserve le récit de recherche
-du minimum de variables. Aucun des deux n'est modifié par cette consolidation.
-Les [cellules proposées](CELLULES_NOTEBOOK.md) restent disponibles pour une mise
-à jour manuelle, avec les chemins du dépôt GitHub.
+Le [notebook principal](../notebooks/MAIN_NoteBook.ipynb) est le point d'entrée
+de la reproduction vérifiée du modèle complet et de la référence constante.
+Le [notebook historique](../notebooks/traffic_impact_study.ipynb) et ses
+[cellules proposées](CELLULES_NOTEBOOK.md) restent disponibles.
 
 `scripts/validate_artifacts.py` vérifie les artefacts et crée
 `dist/rendu_sans_donnees.zip`. Il ne réentraîne pas. La remise doit inclure un
