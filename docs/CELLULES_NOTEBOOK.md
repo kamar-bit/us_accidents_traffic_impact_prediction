@@ -80,7 +80,7 @@ display(pd.Series(selection["feature_groups"], name="group").to_frame())
 
 The central comparison is a constant prior, full logistic regression and full histogram gradient boosting with all 33 admissible inputs. Select hyperparameters using 2020 validation AP and freeze choices before future-year evaluation. Single-variable rules, pair trees and feature budgets are supplementary non-triviality and redundancy diagnostics.
 
-The modules prepare.py, experiment.py, run_study.py and render_report.py and DOCUMENTATION_CIBLE.md must accompany this notebook. Run `pip install -r requirements.txt` in your environment.
+The `traffic_impact/` package, the entry points in `scripts/`, and `docs/DOCUMENTATION_CIBLE.md` must accompany this notebook with the repository structure preserved. Run `python -m pip install -r requirements.txt` from the repository root in your environment.
 ```
 
 ## Cell 7 (code)
