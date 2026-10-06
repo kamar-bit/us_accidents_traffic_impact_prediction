@@ -5,7 +5,7 @@ Comparaison réalisée le 6 octobre 2026 entre le dossier local
 [kamar-bit/us_accidents_traffic_impact_prediction](https://github.com/kamar-bit/us_accidents_traffic_impact_prediction),
 cloné dans `github/us_accidents_traffic_impact_prediction/`.
 Base GitHub : commit `5419c0d` (`doc1`), branche `main`.
-Branche de consolidation : `codex/documentation-consolidee`.
+Branche de consolidation : `Yanis-1`.
 
 ## Compatibilité
 
