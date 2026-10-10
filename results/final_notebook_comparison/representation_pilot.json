@@ -1,0 +1,18 @@
+{
+  "n": 20000,
+  "trees": 20,
+  "min_samples_leaf": 5,
+  "threads": 1,
+  "seed": 42,
+  "shape": [
+    20000,
+    104
+  ],
+  "density": 0.1872778846153846,
+  "sparse_fit_seconds": 4.648561100009829,
+  "dense_fit_seconds": 1.120363800029736,
+  "max_prediction_difference": 0.0,
+  "interrupted_run_completed_configs": 5,
+  "interrupted_during": "rf_500000_w0",
+  "reason": "Dense representation tested on identical data; choose faster representation for all final RF comparisons."
+}

@@ -1,9 +1,21 @@
-# US Accidents : prédire l'impact sur le trafic au début d'un accident
+# US Accidents : prédire l'impact d'un accident sur le trafic
 
-**Ouvrir le [notebook principal MAIN_NoteBook.ipynb](notebooks/MAIN_NoteBook.ipynb), avec ses sorties vérifiées.**
+**Rendu du groupe : [FINAL_NOTEBOOK.ipynb](notebooks/FINAL_NOTEBOOK.ipynb), code et rapport en anglais.**
+
+Le notebook final réunit les contributions de Yanis et Kamar, une préparation
+progressive et les comparaisons communes. Il utilise 34 entrées logiques,
+500 000 événements et une actualisation météo dans l'heure, avec le scénario
+strict au début en comparaison. Le [mode d'emploi](docs/MODE_EMPLOI_NOTEBOOK_FINAL.md)
+explique la reproduction et l'archive de remise.
 
 Projet du module *Hands-on Machine Learning* (Master 1 Informatique - IA).
-Membres du groupe : **[AJOUTER LES TROIS NOMS]**
+Membres du groupe : **Yanis Barbieux, Kamar Benbacha, Théophile Melquiot**.
+
+## Étude historique
+
+Les sections ci-dessous décrivent le protocole initial et ses résultats,
+reproduits dans [MAIN_NoteBook.ipynb](notebooks/MAIN_NoteBook.ipynb).
+Le notebook final utilise le protocole commun décrit ci-dessus.
 
 Peut-on identifier, au début d'un accident, les incidents classés aux niveaux
 supérieurs d'impact sur le trafic à partir de leur contexte, et les performances

@@ -1,0 +1,70 @@
+{
+  "script_sha256": "e1c07a19b2b2763a5dca4ace4c44b4541bffb7ae93fe45acc727b39c5871d5b3",
+  "configs": [
+    {
+      "name": "e17_hgb_200000_w60_c10_refined",
+      "family": "hgb",
+      "train_n": 200000,
+      "after": 60,
+      "cap": 10,
+      "stage": "followup",
+      "params": {
+        "max_iter": 400,
+        "max_leaf_nodes": 63
+      }
+    },
+    {
+      "name": "e18_hgb_200000_w60_c15_refined",
+      "family": "hgb",
+      "train_n": 200000,
+      "after": 60,
+      "cap": 15,
+      "stage": "followup",
+      "params": {
+        "max_iter": 400,
+        "max_leaf_nodes": 63
+      }
+    },
+    {
+      "name": "e19_hgb_200000_w60_c25_refined",
+      "family": "hgb",
+      "train_n": 200000,
+      "after": 60,
+      "cap": 25,
+      "stage": "followup",
+      "params": {
+        "max_iter": 400,
+        "max_leaf_nodes": 63
+      }
+    },
+    {
+      "name": "e20_hgb_500000_w60_c10_refined",
+      "family": "hgb",
+      "train_n": 500000,
+      "after": 60,
+      "cap": 10,
+      "stage": "followup",
+      "params": {
+        "max_iter": 400,
+        "max_leaf_nodes": 63
+      }
+    },
+    {
+      "name": "e21_hgb_500000_w60_c25_refined",
+      "family": "hgb",
+      "train_n": 500000,
+      "after": 60,
+      "cap": 25,
+      "stage": "followup",
+      "params": {
+        "max_iter": 400,
+        "max_leaf_nodes": 63
+      }
+    }
+  ],
+  "tree_settings_from": "e12_hgb_500000_w60_c15",
+  "tree_settings_selected_on": "Validation 2020 AP only",
+  "selection": "Update HGB selection by validation AP across all candidates in the +60-minute scenario; exact ties: faster fit.",
+  "reason": "Tree-capacity gain exceeded the fixed-settings volume gain; compare volume and caps at the selected tree capacity.",
+  "test_used_for_selection": false
+}

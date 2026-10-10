@@ -1,0 +1,236 @@
+{
+  "configs": [
+    {
+      "family": "hgb",
+      "train_n": 200000,
+      "after": 0,
+      "cap": 15,
+      "stage": "core",
+      "params": {
+        "max_iter": 200,
+        "max_leaf_nodes": 31
+      },
+      "name": "e01_hgb_200000_w0_c15"
+    },
+    {
+      "family": "rf",
+      "train_n": 200000,
+      "after": 0,
+      "cap": 15,
+      "stage": "core",
+      "params": {
+        "n_estimators": 100,
+        "min_samples_leaf": 5,
+        "max_features": "sqrt"
+      },
+      "name": "e02_rf_200000_w0_c15"
+    },
+    {
+      "family": "hgb",
+      "train_n": 200000,
+      "after": 60,
+      "cap": 15,
+      "stage": "core",
+      "params": {
+        "max_iter": 200,
+        "max_leaf_nodes": 31
+      },
+      "name": "e03_hgb_200000_w60_c15"
+    },
+    {
+      "family": "rf",
+      "train_n": 200000,
+      "after": 60,
+      "cap": 15,
+      "stage": "core",
+      "params": {
+        "n_estimators": 100,
+        "min_samples_leaf": 5,
+        "max_features": "sqrt"
+      },
+      "name": "e04_rf_200000_w60_c15"
+    },
+    {
+      "family": "hgb",
+      "train_n": 500000,
+      "after": 0,
+      "cap": 15,
+      "stage": "core",
+      "params": {
+        "max_iter": 200,
+        "max_leaf_nodes": 31
+      },
+      "name": "e05_hgb_500000_w0_c15"
+    },
+    {
+      "family": "rf",
+      "train_n": 500000,
+      "after": 0,
+      "cap": 15,
+      "stage": "core",
+      "params": {
+        "n_estimators": 100,
+        "min_samples_leaf": 5,
+        "max_features": "sqrt"
+      },
+      "name": "e06_rf_500000_w0_c15"
+    },
+    {
+      "family": "hgb",
+      "train_n": 500000,
+      "after": 60,
+      "cap": 15,
+      "stage": "core",
+      "params": {
+        "max_iter": 200,
+        "max_leaf_nodes": 31
+      },
+      "name": "e07_hgb_500000_w60_c15"
+    },
+    {
+      "family": "rf",
+      "train_n": 500000,
+      "after": 60,
+      "cap": 15,
+      "stage": "core",
+      "params": {
+        "n_estimators": 100,
+        "min_samples_leaf": 5,
+        "max_features": "sqrt"
+      },
+      "name": "e08_rf_500000_w60_c15"
+    },
+    {
+      "family": "hgb",
+      "train_n": 500000,
+      "after": 60,
+      "cap": 15,
+      "stage": "tuning",
+      "params": {
+        "max_iter": 200,
+        "max_leaf_nodes": 15
+      },
+      "name": "e09_hgb_500000_w60_c15"
+    },
+    {
+      "family": "hgb",
+      "train_n": 500000,
+      "after": 60,
+      "cap": 15,
+      "stage": "tuning",
+      "params": {
+        "max_iter": 200,
+        "max_leaf_nodes": 63
+      },
+      "name": "e10_hgb_500000_w60_c15"
+    },
+    {
+      "family": "hgb",
+      "train_n": 500000,
+      "after": 60,
+      "cap": 15,
+      "stage": "tuning",
+      "params": {
+        "max_iter": 400,
+        "max_leaf_nodes": 31
+      },
+      "name": "e11_hgb_500000_w60_c15"
+    },
+    {
+      "family": "hgb",
+      "train_n": 500000,
+      "after": 60,
+      "cap": 15,
+      "stage": "tuning",
+      "params": {
+        "max_iter": 400,
+        "max_leaf_nodes": 63
+      },
+      "name": "e12_hgb_500000_w60_c15"
+    },
+    {
+      "family": "hgb",
+      "train_n": 500000,
+      "after": 60,
+      "cap": 10,
+      "stage": "tuning",
+      "params": {
+        "max_iter": 200,
+        "max_leaf_nodes": 31
+      },
+      "name": "e13_hgb_500000_w60_c10"
+    },
+    {
+      "family": "hgb",
+      "train_n": 500000,
+      "after": 60,
+      "cap": 25,
+      "stage": "tuning",
+      "params": {
+        "max_iter": 200,
+        "max_leaf_nodes": 31
+      },
+      "name": "e14_hgb_500000_w60_c25"
+    },
+    {
+      "family": "rf",
+      "train_n": 500000,
+      "after": 60,
+      "cap": 15,
+      "stage": "tuning",
+      "params": {
+        "n_estimators": 100,
+        "min_samples_leaf": 10,
+        "max_features": "sqrt"
+      },
+      "name": "e15_rf_500000_w60_c15"
+    },
+    {
+      "family": "rf",
+      "train_n": 500000,
+      "after": 60,
+      "cap": 15,
+      "stage": "tuning",
+      "params": {
+        "n_estimators": 100,
+        "min_samples_leaf": 20,
+        "max_features": "sqrt"
+      },
+      "name": "e16_rf_500000_w60_c15"
+    }
+  ],
+  "versions": {
+    "python": "3.10.11 (tags/v3.10.11:7d4cc5a, Apr  5 2023, 00:38:17) [MSC v.1929 64 bit (AMD64)]",
+    "pandas": "2.3.3",
+    "numpy": "2.2.6",
+    "sklearn": "1.7.2"
+  },
+  "script_sha256": "37747e7e516407c7895c07e4f78aa50b7090431835af6358787830611c1a2d2d",
+  "signature": {
+    "csv": "C:\\Users\\yanis\\Documents\\Cours Saclay\\machine learning handson\\projet\\analyse_us_accidents\\analyse_us_accidents\\US_Accidents_March23.csv",
+    "bytes": 3058183727,
+    "mtime_ns": 1791024744941114200,
+    "prepare_sha256": "c746666bbdc9a0627580b3bd376c441efb88fa9bcde09aff36bb87560d151ec5",
+    "pandas": "2.3.3",
+    "numpy": "2.2.6",
+    "limits": {
+      "train": 500010,
+      "validation": 50000,
+      "test": 100000,
+      "stress": 50000
+    }
+  },
+  "notebook_hashes_before": {
+    "C:\\Users\\yanis\\Documents\\Cours Saclay\\machine learning handson\\projet\\analyse_us_accidents\\analyse_us_accidents\\github\\us_accidents_traffic_impact_prediction\\notebooks\\MAIN_NoteBook.ipynb": "61e444f975808b361c4cf885fda5dacd33f33cab173cc8c65fb42a8f5cbeae45",
+    "C:\\Users\\yanis\\Documents\\Cours Saclay\\machine learning handson\\projet\\analyse_us_accidents\\analyse_us_accidents\\github\\01_preprocessing_kamar.ipynb": "fb1b96e393aac82cf7628f9b5c7e927fadeecb1c0ebd38fd0184a03c42e4bd8e",
+    "C:\\Users\\yanis\\Documents\\Cours Saclay\\machine learning handson\\projet\\analyse_us_accidents\\analyse_us_accidents\\github\\02_models_kamar.ipynb": "6f1b37cc6f00521a0c411b72cfc225c0acaa35d060005f168cd7ee9846df52c4"
+  },
+  "selection": "Highest validation AP within the +60-minute scenario, independently per family. Exact ties: faster fit.",
+  "primary_metric": "Average Precision",
+  "threads": 4,
+  "seed": 42,
+  "random_forest_representation": "dense float32 after training-only median imputation and one-hot",
+  "threshold": "Maximum F1 on validation only; reused unchanged on historical years.",
+  "test_used_for_selection": false,
+  "bootstrap_note": "200 paired weekly resamples; descriptive on reused validation."
+}
