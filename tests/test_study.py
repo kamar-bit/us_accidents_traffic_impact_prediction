@@ -70,6 +70,14 @@ class StudyChecks(unittest.TestCase):
         rule = OneRule().fit(x,y,"x")
         self.assertEqual(rule.predict(pd.Series(pd.Categorical(["unknown"])))[0],.5)
 
+    def test_top_ten_lift_compares_precision_to_prevalence(self):
+        y = np.array([1, 1, 1, 0, 0, 0, 0, 0, 0, 0])
+        p = np.linspace(0.99, 0.1, len(y))
+        metrics = score(y, p, np.arange(10))
+        self.assertEqual(metrics["precision10"], 1.0)
+        self.assertEqual(metrics["prevalence"], 0.3)
+        self.assertAlmostEqual(metrics["lift10"], 1 / 0.3)
+
     def test_weighted_metrics_match_explicit_repetition_with_ties(self):
         y=np.array([1,0,1,0,0,1,0,1,0,1,0,0])
         p=np.array([.5,.5,.2,.2,.2,.9,.9,.8,.8,.3,.3,.3])

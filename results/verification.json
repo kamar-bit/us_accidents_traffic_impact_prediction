@@ -10,5 +10,5 @@
   ],
   "test_metrics_computed_after_freeze": true,
   "paired_bootstrap_draws": 500,
-  "elapsed_seconds": 314.9081690311432
+  "elapsed_seconds": 528.6895225048065
 }
