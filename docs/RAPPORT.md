@@ -1,6 +1,6 @@
 # Prédire l'impact sur le trafic au début d'un accident
 
-Le modèle complet à 33 variables atteint sur 2021 une AP de 0.7031, une ROC-AUC de 0.8362 et une précision de 80.13 % parmi les 10 % d'incidents les mieux classés. Sur la période disponible de 2022, son AP reste de 0.7092.
+Le modèle complet à 33 variables atteint sur 2021 une AP de 0.7178, une ROC-AUC de 0.8486 et une précision de 81.27 % parmi les 10 % d'incidents les mieux classés. Sur la période disponible de 2022, son AP reste de 0.7238.
 
 ## Résultat principal : modèle complet
 
@@ -12,9 +12,9 @@ Le modèle principal est le boosting complet à 33 variables admissibles. Les r�
 | --- | --- | --- | --- | --- |
 | prior | 0.3427 | 0.5 | 0.0977 | 0.335 |
 | logistic_full | 0.5667 | 0.7344 | 0.1938 | 0.6643 |
-| hgb_full | 0.7031 | 0.8362 | 0.2338 | 0.8013 |
+| hgb_full | 0.7178 | 0.8486 | 0.2371 | 0.8127 |
 
-AP et AUC sont des mesures de classement, pas des pourcentages de prédictions correctes. Dans les 10 % de scores les plus élevés sur 2021, 80.13 % des événements sont positifs ; ce budget retrouve 23.38 % de tous les positifs. Le modèle n'identifie donc pas tous les incidents d'impact supérieur. Les probabilités n'ont pas été validées par calibration.
+AP et AUC sont des mesures de classement, pas des pourcentages de prédictions correctes. Dans les 10 % de scores les plus élevés sur 2021, 81.27 % des événements sont positifs ; ce budget retrouve 23.71 % de tous les positifs. Le modèle n'identifie donc pas tous les incidents d'impact supérieur. Les probabilités n'ont pas été validées par calibration.
 
 ## Documentation de la cible confirmée
 
@@ -153,14 +153,14 @@ Meilleures variables isolées sur 2020 :
 | best_single_rule | 1 | 0.4118 | 14.25 % | 48.84 % |
 | best_pair_rule | 2 | 0.4701 | 15.04 % | 51.55 % |
 | logistic_full | 33 | 0.5667 | 19.38 % | 66.43 % |
-| hgb_pair_2 | 2 | 0.4991 | 15.06 % | 51.61 % |
-| geo_pair_Start_Lat_Start_Lng | 2 | 0.6046 | 19.78 % | 67.78 % |
-| pair_plus_geography | 6 | 0.6827 | 22.85 % | 78.31 % |
-| hgb_full | 33 | 0.7031 | 23.38 % | 80.13 % |
+| hgb_pair_2 | 2 | 0.4994 | 15.31 % | 52.46 % |
+| geo_pair_Start_Lat_Start_Lng | 2 | 0.6244 | 20.33 % | 69.66 % |
+| pair_plus_geography | 6 | 0.7041 | 23.18 % | 79.45 % |
+| hgb_full | 33 | 0.7178 | 23.71 % | 81.27 % |
 
 Référence AP sans information : prévalence de 0.3427. Le rappel à 10 % sélectionne un budget identique pour tous les modèles, avec égalités départagées par une priorité indépendante de la cible. C'est un classement rétrospectif. La probabilité constante conserve le taux du train ; sa calibration peut différer de celle du test.
 
-Face à hgb_pair_2, différence de rappel : 8.32 points, IC 95 % [7.93 ; 8.69]. Différence d'AP : 0.2040, IC [0.1984 ; 0.2091]. Intervalles appariés par rééchantillonnage de semaines, 500 tirages.
+Face à hgb_pair_2, différence de rappel : 8.41 points, IC 95 % [8.02 ; 8.81]. Différence d'AP : 0.2184, IC [0.2130 ; 0.2231]. Intervalles appariés par rééchantillonnage de semaines, 500 tirages.
 
 Le critère historique d'utilité comparant la complexité avait été fixé à cinq points supplémentaires de rappel, un intervalle de différence excluant zéro et aucune baisse d'AP. Il est conservé pour interpréter cette expérience secondaire, pas comme nouveau critère de réussite de la question prédictive. Il est pédagogique, sans interprétation économique. Un intervalle qui englobe zéro ne démontre pas une équivalence.
 
@@ -169,23 +169,23 @@ Le critère historique d'utilité comparant la complexité avait été fixé à 
 
 Le screening des paires par arbres de quatre feuilles peut manquer une relation spatiale complexe. La forte performance du groupe géographique sur validation a donc motivé un contrôle supplémentaire de trois paires : latitude-longitude, latitude-État et longitude-État. Ces contrôles sont ajoutés après l'expérience principale et ne remplacent pas sa sélection prédéclarée. Leurs hyperparamètres reprennent ceux du modèle complet ; leur gagnant est choisi exclusivement sur 2020 avant leurs scores de test.
 
-La paire latitude-longitude atteint une AP de 0.6046 sur 2021. Face à ce concurrent, le gain du modèle complet en rappel est de **3.60 points**, IC [3.27 ; 3.85], donc inférieur au seuil de cinq points. Le gain d'AP reste de 0.0985. Sur 2022, le gain en rappel est de 3.45 points.
+La paire latitude-longitude atteint une AP de 0.6244 sur 2021. Face à ce concurrent, le gain du modèle complet en rappel est de **3.39 points**, IC [3.08 ; 3.66], donc inférieur au seuil de cinq points. Le gain d'AP reste de 0.0934. Sur 2022, le gain en rappel est de 2.99 points.
 
 Il faut ainsi distinguer trois conclusions : les règles mathématiques simples testées ne reproduisent pas le modèle complet ; un modèle non linéaire à deux coordonnées est déjà performant ; toutes les autres variables combinées améliorent encore l'AP, mais leur gain opérationnel marginal dépend du budget d'alertes retenu. Le verdict favorable à la comparaison primaire ne suffit pas à dire que 33 variables sont indispensables.
 
 
-Une autre sensibilité choisit le concurrent à deux variables sur le rappel de 2020 au lieu de l'AP : hgb_pair_4. Le gain du modèle complet sur 2021 est alors de 4.40 points, IC [3.66 ; 5.12]. Le choix de la métrique de sélection modifie donc l'interprétation opérationnelle.
+Une autre sensibilité choisit le concurrent à deux variables sur le rappel de 2020 au lieu de l'AP : hgb_pair_4. Le gain du modèle complet sur 2021 est alors de 4.73 points, IC [3.97 ; 5.43]. Le choix de la métrique de sélection modifie donc l'interprétation opérationnelle.
 
 
 ## Apport des groupes et du volume
 
-- time : gain d'AP de 0.0581 sur 2021, en comparant le modèle complet à sa variante sans ce groupe.
-- geography : gain d'AP de 0.1369 sur 2021, en comparant le modèle complet à sa variante sans ce groupe.
-- road : gain d'AP de 0.0379 sur 2021, en comparant le modèle complet à sa variante sans ce groupe.
-- light : gain d'AP de 0.0005 sur 2021, en comparant le modèle complet à sa variante sans ce groupe.
-- weather : gain d'AP de -0.0015 sur 2021, en comparant le modèle complet à sa variante sans ce groupe.
+- time : gain d'AP de 0.0521 sur 2021, en comparant le modèle complet à sa variante sans ce groupe.
+- geography : gain d'AP de 0.1563 sur 2021, en comparant le modèle complet à sa variante sans ce groupe.
+- road : gain d'AP de 0.0327 sur 2021, en comparant le modèle complet à sa variante sans ce groupe.
+- light : gain d'AP de -0.0003 sur 2021, en comparant le modèle complet à sa variante sans ce groupe.
+- weather : gain d'AP de -0.0039 sur 2021, en comparant le modèle complet à sa variante sans ce groupe.
 
-Le modèle à six variables (`hour`, `Traffic_Signal`, `Start_Lat`, `Start_Lng`, `State`, `Timezone`) atteint une AP de 0.6827 et un rappel de 22.85 % sur 2021. Le modèle complet atteint 0.7031 et 23.38 %. Ce diagnostic montre des redondances ; il ne démontre pas un optimum et ne remplace pas le modèle complet comme résultat principal.
+Le modèle à six variables (`hour`, `Traffic_Signal`, `Start_Lat`, `Start_Lng`, `State`, `Timezone`) atteint une AP de 0.7041 et un rappel de 23.18 % sur 2021. Le modèle complet atteint 0.7178 et 23.71 %. Ce diagnostic montre des redondances ; il ne démontre pas un optimum et ne remplace pas le modèle complet comme résultat principal.
 
 Ces différences sont des associations prédictives conditionnelles aux autres entrées, pas des effets causaux de la météo ou de la route. Les variantes utilisent les hyperparamètres du modèle complet, sans réglage spécifique à chaque ablation. Les permutations de groupes peuvent créer des combinaisons irréalistes et doivent être lues avec les ablations réentraînées. L'ordre de la courbe de variables a été fixé sur validation, en partant de la meilleure paire puis des règles univariées les mieux classées. Ce n'est pas une recherche exhaustive de tous les sous-ensembles de cinq ou dix variables.
 
@@ -199,16 +199,16 @@ Les figures `02_feature_budget.png`, `03_group_ablation.png` et `04_learning_cur
 | best_single_rule | 1 | 0.4305 | 15.19 % | 52.72 % |
 | best_pair_rule | 2 | 0.4768 | 15.29 % | 53.06 % |
 | logistic_full | 33 | 0.5727 | 19.43 % | 67.40 % |
-| hgb_pair_2 | 2 | 0.5081 | 15.72 % | 54.54 % |
-| geo_pair_Start_Lat_Start_Lng | 2 | 0.6149 | 19.89 % | 69.02 % |
-| pair_plus_geography | 6 | 0.6937 | 22.84 % | 79.26 % |
-| hgb_full | 33 | 0.7092 | 23.35 % | 81.00 % |
+| hgb_pair_2 | 2 | 0.5088 | 15.70 % | 54.46 % |
+| geo_pair_Start_Lat_Start_Lng | 2 | 0.6373 | 20.58 % | 71.42 % |
+| pair_plus_geography | 6 | 0.7142 | 23.26 % | 80.70 % |
+| hgb_full | 33 | 0.7238 | 23.58 % | 81.80 % |
 
-Gain utile selon le critère fixé avant les résultats. Face au même concurrent figé : 7.63 points de rappel, IC [7.11 ; 8.11]. Aucun réglage sur cette période. Les résultats mensuels et par État sont dans `monthly_state_scores.csv` ; ne pas comparer des États sans considérer leur prévalence et leur effectif.
+Gain utile selon le critère fixé avant les résultats. Face au même concurrent figé : 7.88 points de rappel, IC [7.24 ; 8.36]. Aucun réglage sur cette période. Les résultats mensuels et par État sont dans `monthly_state_scores.csv` ; ne pas comparer des États sans considérer leur prévalence et leur effectif.
 
-Contrôle d'étiquettes mélangées : AP 0.3590, AUC 0.5199 sur 2021. L'AP attendue sans information est proche de la prévalence. Des écarts finis existent ; ce contrôle seul ne garantit pas l'absence de toute fuite.
+Contrôle d'étiquettes mélangées : AP 0.3608, AUC 0.5175 sur 2021. L'AP attendue sans information est proche de la prévalence. Des écarts finis existent ; ce contrôle seul ne garantit pas l'absence de toute fuite.
 
-Cinq graines de mélange donnent sur 2021 une AP comprise entre 0.3445 et 0.3610, et une AUC entre 0.5045 et 0.5199. Ces faibles écarts au hasard ne sont pas exactement nuls, mais restent loin de l'AP du modèle réel. Voir `shuffled_label_replicates.csv`.
+Cinq graines de mélange donnent sur 2021 une AP comprise entre 0.3466 et 0.3608, et une AUC entre 0.4984 et 0.5175. Ces faibles écarts au hasard ne sont pas exactement nuls, mais restent loin de l'AP du modèle réel. Voir `shuffled_label_replicates.csv`.
 
 Audit des variables exclues sur 2021 :
 
@@ -216,7 +216,7 @@ Audit des variables exclues sur 2021 :
 | --- | --- | --- |
 | diagnostic_Distance(mi) | 0.3718 | 0.1522 |
 | diagnostic_duration_min | 0.3626 | 0.1254 |
-| diagnostic_full_future | 0.7063 | 0.2337 |
+| diagnostic_full_future | 0.723 | 0.237 |
 
 Ces scores diagnostiques ne sont pas en compétition avec les variables autorisées. Leur association avec la cible ne prouve pas à elle seule une fuite, et leur faible performance ne garantit pas leur disponibilité initiale. Les règles à quatre classes sur distance et durée sont décrites dans `future_information_4class.csv`.
 
@@ -224,18 +224,18 @@ Sensibilité aux collisions spatiotemporelles :
 
 | split | name | excluded_within_holdout | ap | recall10 |
 | --- | --- | --- | --- | --- |
-| test | hgb_full | 3723 | 0.6959 | 0.2381 |
-| test | hgb_pair_2 | 3723 | 0.4888 | 0.1524 |
-| test | near_deduplicated_train | 3723 | 0.6967 | 0.2389 |
-| stress | hgb_full | 1473 | 0.7042 | 0.2357 |
-| stress | hgb_pair_2 | 1473 | 0.5013 | 0.1585 |
-| stress | near_deduplicated_train | 1473 | 0.7047 | 0.2372 |
+| test | hgb_full | 173 | 0.7177 | 0.2372 |
+| test | hgb_pair_2 | 173 | 0.4993 | 0.1531 |
+| test | near_deduplicated_train | 173 | 0.718 | 0.2373 |
+| stress | hgb_full | 89 | 0.7238 | 0.2358 |
+| stress | hgb_pair_2 | 89 | 0.5086 | 0.157 |
+| stress | near_deduplicated_train | 89 | 0.7246 | 0.2361 |
 
 L'entraînement avec un représentant par cellule est comparé au modèle complet. Les collisions avec le train sont nulles ou rares par construction des périodes disjointes ; la déduplication interne des périodes est le contrôle informatif ici.
 
 ## Reproductibilité, originalité et limites
 
-Sélection figée avant calcul des scores de 2021 et 2022 dans `frozen_selection.json`. Modèles sauvegardés dans `frozen_models.joblib`, prédictions et priorités dans `predictions_test.csv` et `predictions_stress.csv`. Hyperparamètres HGB : {"max_leaf_nodes": 31, "max_iter": 200}. Sans poids de classe et sans arrêt anticipé utilisant un split aléatoire. Durée des expériences : 315 secondes. Versions : {"sklearn": "1.7.2", "numpy": "2.3.5", "pandas": "3.0.1"}.
+Sélection figée avant calcul des scores de 2021 et 2022 dans `frozen_selection.json`. Modèles sauvegardés dans `frozen_models.joblib`, prédictions et priorités dans `predictions_test.csv` et `predictions_stress.csv`. Hyperparamètres HGB : {"max_leaf_nodes": 31, "max_iter": 400}. Sans poids de classe et sans arrêt anticipé utilisant un split aléatoire. Durée des expériences : 529 secondes. Versions : {"sklearn": "1.7.2", "numpy": "2.2.6", "pandas": "2.3.3"}.
 
 La contribution du projet est une prédiction par modèle complet avec évaluation temporelle, contrôle des informations admissibles et analyse des limites. Les règles et budgets d'information sont des diagnostics de non-trivialité. Le sujet et l'évaluation temporelle existent déjà : [projet comparable](https://github.com/Simranghag22/us-accidents-severity-prediction), [autre projet de cours](https://github.com/JustinJ-Lo/vehicle-severity-ml). Leurs scores ne sont pas directement comparables aux nôtres. Définition de la cible : [fiche du créateur](https://www.kaggle.com/sobhanmoosavi/us-accidents/metadata).
 
