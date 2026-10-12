@@ -9,7 +9,7 @@
   "simple_champion": "hgb_pair_2",
   "hgb_parameters": {
     "max_leaf_nodes": 31,
-    "max_iter": 400
+    "max_iter": 200
   },
   "feature_order": [
     "hour",
@@ -254,7 +254,7 @@
       ],
       "parameters": {
         "max_leaf_nodes": 31,
-        "max_iter": 400
+        "max_iter": 200
       }
     },
     "hgb_pair_1": {
@@ -265,7 +265,7 @@
       ],
       "parameters": {
         "max_leaf_nodes": 31,
-        "max_iter": 400
+        "max_iter": 200
       }
     },
     "hgb_pair_2": {
@@ -276,7 +276,7 @@
       ],
       "parameters": {
         "max_leaf_nodes": 31,
-        "max_iter": 400
+        "max_iter": 200
       }
     },
     "hgb_pair_3": {
@@ -287,7 +287,7 @@
       ],
       "parameters": {
         "max_leaf_nodes": 31,
-        "max_iter": 400
+        "max_iter": 200
       }
     },
     "hgb_pair_4": {
@@ -298,7 +298,7 @@
       ],
       "parameters": {
         "max_leaf_nodes": 31,
-        "max_iter": 400
+        "max_iter": 200
       }
     },
     "hgb_pair_5": {
@@ -309,7 +309,7 @@
       ],
       "parameters": {
         "max_leaf_nodes": 31,
-        "max_iter": 400
+        "max_iter": 200
       }
     },
     "only_time": {
@@ -322,7 +322,7 @@
       ],
       "parameters": {
         "max_leaf_nodes": 31,
-        "max_iter": 400
+        "max_iter": 200
       }
     },
     "without_time": {
@@ -360,7 +360,7 @@
       ],
       "parameters": {
         "max_leaf_nodes": 31,
-        "max_iter": 400
+        "max_iter": 200
       }
     },
     "pair_plus_time": {
@@ -374,7 +374,7 @@
       ],
       "parameters": {
         "max_leaf_nodes": 31,
-        "max_iter": 400
+        "max_iter": 200
       }
     },
     "only_geography": {
@@ -387,7 +387,7 @@
       ],
       "parameters": {
         "max_leaf_nodes": 31,
-        "max_iter": 400
+        "max_iter": 200
       }
     },
     "without_geography": {
@@ -425,7 +425,7 @@
       ],
       "parameters": {
         "max_leaf_nodes": 31,
-        "max_iter": 400
+        "max_iter": 200
       }
     },
     "pair_plus_geography": {
@@ -440,7 +440,7 @@
       ],
       "parameters": {
         "max_leaf_nodes": 31,
-        "max_iter": 400
+        "max_iter": 200
       }
     },
     "only_road": {
@@ -461,7 +461,7 @@
       ],
       "parameters": {
         "max_leaf_nodes": 31,
-        "max_iter": 400
+        "max_iter": 200
       }
     },
     "without_road": {
@@ -491,7 +491,7 @@
       ],
       "parameters": {
         "max_leaf_nodes": 31,
-        "max_iter": 400
+        "max_iter": 200
       }
     },
     "pair_plus_road": {
@@ -513,7 +513,7 @@
       ],
       "parameters": {
         "max_leaf_nodes": 31,
-        "max_iter": 400
+        "max_iter": 200
       }
     },
     "only_light": {
@@ -526,7 +526,7 @@
       ],
       "parameters": {
         "max_leaf_nodes": 31,
-        "max_iter": 400
+        "max_iter": 200
       }
     },
     "without_light": {
@@ -564,7 +564,7 @@
       ],
       "parameters": {
         "max_leaf_nodes": 31,
-        "max_iter": 400
+        "max_iter": 200
       }
     },
     "pair_plus_light": {
@@ -579,7 +579,7 @@
       ],
       "parameters": {
         "max_leaf_nodes": 31,
-        "max_iter": 400
+        "max_iter": 200
       }
     },
     "only_weather": {
@@ -597,7 +597,7 @@
       ],
       "parameters": {
         "max_leaf_nodes": 31,
-        "max_iter": 400
+        "max_iter": 200
       }
     },
     "without_weather": {
@@ -630,7 +630,7 @@
       ],
       "parameters": {
         "max_leaf_nodes": 31,
-        "max_iter": 400
+        "max_iter": 200
       }
     },
     "pair_plus_weather": {
@@ -650,7 +650,7 @@
       ],
       "parameters": {
         "max_leaf_nodes": 31,
-        "max_iter": 400
+        "max_iter": 200
       }
     },
     "budget_1": {
@@ -660,7 +660,7 @@
       ],
       "parameters": {
         "max_leaf_nodes": 31,
-        "max_iter": 400
+        "max_iter": 200
       }
     },
     "budget_2": {
@@ -671,7 +671,7 @@
       ],
       "parameters": {
         "max_leaf_nodes": 31,
-        "max_iter": 400
+        "max_iter": 200
       }
     },
     "budget_5": {
@@ -685,7 +685,7 @@
       ],
       "parameters": {
         "max_leaf_nodes": 31,
-        "max_iter": 400
+        "max_iter": 200
       }
     },
     "budget_10": {
@@ -704,7 +704,7 @@
       ],
       "parameters": {
         "max_leaf_nodes": 31,
-        "max_iter": 400
+        "max_iter": 200
       }
     },
     "budget_33": {
@@ -746,7 +746,7 @@
       ],
       "parameters": {
         "max_leaf_nodes": 31,
-        "max_iter": 400
+        "max_iter": 200
       }
     },
     "train_size_25000": {
@@ -788,7 +788,7 @@
       ],
       "parameters": {
         "max_leaf_nodes": 31,
-        "max_iter": 400
+        "max_iter": 200
       }
     },
     "train_size_50000": {
@@ -830,7 +830,7 @@
       ],
       "parameters": {
         "max_leaf_nodes": 31,
-        "max_iter": 400
+        "max_iter": 200
       }
     },
     "train_size_100000": {
@@ -872,7 +872,7 @@
       ],
       "parameters": {
         "max_leaf_nodes": 31,
-        "max_iter": 400
+        "max_iter": 200
       }
     },
     "train_size_200000": {
@@ -914,7 +914,7 @@
       ],
       "parameters": {
         "max_leaf_nodes": 31,
-        "max_iter": 400
+        "max_iter": 200
       }
     },
     "missingness_only": {
@@ -937,7 +937,7 @@
       ],
       "parameters": {
         "max_leaf_nodes": 31,
-        "max_iter": 400
+        "max_iter": 200
       }
     },
     "shuffled_labels_control": {
@@ -979,7 +979,7 @@
       ],
       "parameters": {
         "max_leaf_nodes": 31,
-        "max_iter": 400
+        "max_iter": 200
       }
     },
     "near_deduplicated_train": {
@@ -1021,7 +1021,7 @@
       ],
       "parameters": {
         "max_leaf_nodes": 31,
-        "max_iter": 400
+        "max_iter": 200
       }
     },
     "diagnostic_Distance(mi)": {
@@ -1095,7 +1095,7 @@
       ],
       "parameters": {
         "max_leaf_nodes": 31,
-        "max_iter": 400
+        "max_iter": 200
       }
     }
   },
@@ -1103,8 +1103,8 @@
   "test_used_for_selection": false,
   "bootstrap_draws": 500,
   "versions": {
-    "sklearn": "1.7.2",
-    "numpy": "2.2.6",
-    "pandas": "2.3.3"
+    "sklearn": "1.9.1",
+    "numpy": "2.5.4",
+    "pandas": "3.0.6"
   }
 }

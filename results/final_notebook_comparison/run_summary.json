@@ -1,0 +1,14 @@
+{
+  "seconds": 693.7781893000356,
+  "notebooks_unchanged": true,
+  "notebook_hashes_after": {
+    "C:\\Users\\yanis\\Documents\\Cours Saclay\\machine learning handson\\projet\\analyse_us_accidents\\analyse_us_accidents\\github\\us_accidents_traffic_impact_prediction\\notebooks\\MAIN_NoteBook.ipynb": "61e444f975808b361c4cf885fda5dacd33f33cab173cc8c65fb42a8f5cbeae45",
+    "C:\\Users\\yanis\\Documents\\Cours Saclay\\machine learning handson\\projet\\analyse_us_accidents\\analyse_us_accidents\\github\\01_preprocessing_kamar.ipynb": "fb1b96e393aac82cf7628f9b5c7e927fadeecb1c0ebd38fd0184a03c42e4bd8e",
+    "C:\\Users\\yanis\\Documents\\Cours Saclay\\machine learning handson\\projet\\analyse_us_accidents\\analyse_us_accidents\\github\\02_models_kamar.ipynb": "6f1b37cc6f00521a0c411b72cfc225c0acaa35d060005f168cd7ee9846df52c4"
+  },
+  "completed_fits": 21,
+  "finished_at": "2026-10-10T12:42:06.007433",
+  "memory_note": "Peak total RSS of this process, sampled every 0.1s during preparation/fit/prediction. Not incremental estimator memory.",
+  "base_series_seconds": 561.2790698000463,
+  "followup_seconds": 132.49911949998932
+}

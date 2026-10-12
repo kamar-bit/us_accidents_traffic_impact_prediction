@@ -148,10 +148,10 @@ for name in ["01_rules_vs_ml.png", "02_feature_budget.png", "03_group_ablation.p
 | best_single_rule | 1 | 0.4118 | 0.1425 | 0.4884 |
 | best_pair_rule | 2 | 0.4701 | 0.1504 | 0.5155 |
 | logistic_full | 33 | 0.5667 | 0.1938 | 0.6643 |
-| hgb_pair_2 | 2 | 0.4994 | 0.1531 | 0.5246 |
-| geo_pair_Start_Lat_Start_Lng | 2 | 0.6244 | 0.2033 | 0.6966 |
-| pair_plus_geography | 6 | 0.7041 | 0.2318 | 0.7945 |
-| hgb_full | 33 | 0.7178 | 0.2371 | 0.8127 |
+| hgb_pair_2 | 2 | 0.4989 | 0.1506 | 0.5161 |
+| geo_pair_Start_Lat_Start_Lng | 2 | 0.6045 | 0.1989 | 0.6816 |
+| pair_plus_geography | 6 | 0.6844 | 0.2267 | 0.7769 |
+| hgb_full | 33 | 0.7042 | 0.2348 | 0.8046 |
 
 Geographic pairs are supplementary checks; the primary selection remains frozen.
 ```
@@ -203,9 +203,9 @@ Geographic pairs are supplementary checks; the primary selection remains frozen.
 ```markdown
 ## Conclusion
 
-The full 33-input model predicts the recorded upper traffic-impact levels (Severity 3 or 4), rather than injury severity or delay minutes. On the 2021 temporal holdout it reaches AP 0.7178 and ROC-AUC 0.8486, compared with AP 0.5667 for full logistic regression and 0.3427 for the no-information reference.
+The full 33-input model predicts the recorded upper traffic-impact levels (Severity 3 or 4), rather than injury severity or delay minutes. On the 2021 temporal holdout it reaches AP 0.7042 and ROC-AUC 0.8369, compared with AP 0.5667 for full logistic regression and 0.3427 for the no-information reference.
 
-Within the highest-ranked 10% of incidents, precision is 81.27% and recall is 23.71%. On the available 2022 period, AP remains 0.7238. This supports temporal ranking performance in the studied provider, not exhaustive detection or deployment readiness. Probabilities have not been validated by calibration.
+Within the highest-ranked 10% of incidents, precision is 80.46% and recall is 23.48%. On the available 2022 period, AP remains 0.7110. This supports temporal ranking performance in the studied provider, not exhaustive detection or deployment readiness. Probabilities have not been validated by calibration.
 
 Simple rules, feature budgets and geographic pairs are secondary diagnostics. They do not establish that all 33 inputs are necessary. The historical five-recall-point criterion judged incremental complexity; it is not a newly preregistered success criterion for this reframed predictive question. The framing changed after the experiments, with scores and frozen selection preserved.
 

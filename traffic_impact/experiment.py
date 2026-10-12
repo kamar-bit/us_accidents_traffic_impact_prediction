@@ -112,29 +112,11 @@ def score(y, p, tie):
     k = max(1, int(np.ceil(len(y) * .1)))
     selected = np.lexsort((tie, -p))[:k]
     positives = int(y.sum())
-    prevalence = float(y.mean())
-    precision10 = float(y[selected].mean())
     return {"n": len(y), "prevalence": float(y.mean()),
             "ap": float(average_precision_score(y, p)) if positives else None,
             "auc": float(roc_auc_score(y, p)) if 0 < positives < len(y) else None,
             "recall10": float(y[selected].sum()/positives) if positives else None,
-            "precision10": precision10,
-            "lift10": precision10 / prevalence if prevalence else None,
-            "brier": float(brier_score_loss(y, p))}
-
-
-def format_score(label, metrics):
-    def value(key, percent=False):
-        metric = metrics.get(key)
-        if metric is None or pd.isna(metric):
-            return "n/a"
-        return f"{metric:.1%}" if percent else f"{metric:.4f}"
-
-    lift = metrics.get("lift10")
-    lift_text = "n/a" if lift is None or pd.isna(lift) else f"{lift:.2f}x"
-    return (f"{label:<26} AP {value('ap')} | AUC {value('auc')} | "
-            f"P@10 {value('precision10', True)} | R@10 {value('recall10', True)} | "
-            f"Lift@10 {lift_text}")
+            "precision10": float(y[selected].mean()), "brier": float(brier_score_loss(y, p))}
 
 
 class OneRule:
@@ -322,7 +304,7 @@ def run(out=ROOT, bootstrap=500):
         models[name] = model
         valrows.append(m)
         pd.DataFrame(valrows).to_csv(result / "validation_models.csv", index=False)
-        print(format_score(f"Validation {name}", m), flush=True)
+        print(f"Validation {name}: AP={m['ap']:.4f}, recall10={m['recall10']:.4f}", flush=True)
         return m
 
     register("prior", Model("prior", []))
@@ -369,32 +351,23 @@ def run(out=ROOT, bootstrap=500):
         best = None
         for C in [.1, 1., 10.]:
             model = Model("logistic", cols, {"C": C}).fit(train, yt)
-            metrics = score(yv, model.predict(valid), ties["validation"])
-            ap = metrics["ap"]
-            tuning.append({"family": name, "parameters": json.dumps({"C": C}), **metrics})
+            ap = average_precision_score(yv, model.predict(valid))
+            tuning.append({"family": name, "parameters": json.dumps({"C": C}), "ap": ap})
             if best is None or ap > best[0]:
                 best = ap, model
         register(name, best[1])
     best = None
-    for leaves, iters in itertools.product([7,15,31], [100,200, 400]):
+    for leaves, iters in itertools.product([7,15,31], [100,200]):
         params = {"max_leaf_nodes": leaves, "max_iter": iters}
         model = Model("hgb", full, params).fit(train, yt)
-        metrics = score(yv, model.predict(valid), ties["validation"])
-        ap = metrics["ap"]
-        tuning.append({"family": "hgb_full", "parameters": json.dumps(params), **metrics})
-        print(format_score(f"HGB {params}", metrics), flush=True)
+        ap = average_precision_score(yv, model.predict(valid))
+        tuning.append({"family": "hgb_full", "parameters": json.dumps(params), "ap": ap})
+        print(f"HGB tuning {params}: AP={ap:.4f}", flush=True)
         if best is None or ap > best[0]:
             best = ap, model
     register("hgb_full", best[1])
     params = best[1].parameters
-    tuning_table = pd.DataFrame(tuning).sort_values(["family", "ap"], ascending=[True, False])
-    tuning_table.to_csv(result / "tuning.csv", index=False)
-    print("\nValidation tuning summary (ranked by AP; no test-period selection):", flush=True)
-    print(tuning_table[["family", "parameters", "ap", "auc", "precision10", "recall10", "lift10"]]
-          .to_string(index=False, formatters={
-              "ap": "{:.4f}".format, "auc": "{:.4f}".format,
-              "precision10": "{:.1%}".format, "recall10": "{:.1%}".format,
-              "lift10": "{:.2f}x".format}), flush=True)
+    pd.DataFrame(tuning).to_csv(result / "tuning.csv", index=False)
     nonlinear_pair_rows = []
     for i, row in pair_table.head(5).iterrows():
         name = f"hgb_pair_{len(nonlinear_pair_rows)+1}"

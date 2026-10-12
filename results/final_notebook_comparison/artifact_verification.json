@@ -1,0 +1,13 @@
+{
+  "validation_predictions_checked": 21,
+  "historical_predictions_checked": 4,
+  "metrics_match_saved_predictions": true,
+  "selection_matches_validation_only_rule": true,
+  "notebooks_sha256_unchanged": true,
+  "forbidden_character_absent": true,
+  "stage_counts": {
+    "core": 8,
+    "tuning": 8,
+    "followup": 5
+  }
+}
