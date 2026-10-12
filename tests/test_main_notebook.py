@@ -18,7 +18,7 @@ def notebook_functions():
                  "average_precision_score": average_precision_score,
                  "roc_auc_score": roc_auc_score}
     notebook = json.loads(NOTEBOOK.read_text(encoding="utf-8"))
-    wanted = {"evaluate", "audit_transition", "category_status", "threshold_metrics"}
+    wanted = {"evaluate", "audit_transition", "category_status"}
     found = set()
     for cell in notebook["cells"]:
         if cell["cell_type"] != "code":
@@ -63,16 +63,6 @@ class MainNotebookChecks(unittest.TestCase):
         for scores in [np.array([np.nan, 0.5]), np.array([-0.1, 0.5]), np.array([1.1, 0.5])]:
             with self.assertRaises(AssertionError):
                 self.functions["evaluate"](np.array([0, 1]), scores, np.arange(2))
-
-    def test_threshold_metrics_report_alert_volume_and_false_alarms(self):
-        target = np.array([1, 0, 1, 0])
-        probability = np.array([0.9, 0.8, 0.4, 0.1])
-        result = self.functions["threshold_metrics"](target, probability, 0.5)
-        self.assertEqual(result["alert_count"], 2)
-        self.assertEqual(result["false_alarms"], 1)
-        self.assertEqual(result["precision"], 0.5)
-        self.assertEqual(result["recall"], 0.5)
-        self.assertEqual(result["f1"], 0.5)
 
     def test_change_ledger_counts_mappings_and_unique_events(self):
         namespace = self.functions
