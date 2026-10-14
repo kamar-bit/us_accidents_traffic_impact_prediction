@@ -18,7 +18,8 @@ def package():
         ROOT / "requirements.txt", ROOT / "requirements-main-notebook.txt",
         ROOT / "requirements-final-notebook.txt",
         ROOT / "results/final_notebook_comparison/validation.csv",
-        ROOT / "results/final_notebook_comparison/frozen_selection.json"]
+        ROOT / "results/final_notebook_comparison/frozen_selection.json",
+        ROOT / "results/lightgbm_comparison/scores.csv"]
     files.extend(sorted((ROOT / "traffic_impact").glob("*.py")))
     files.append(ROOT / "docs/MODE_EMPLOI_NOTEBOOK_FINAL.md")
     files.extend(ROOT / "scripts" / name for name in

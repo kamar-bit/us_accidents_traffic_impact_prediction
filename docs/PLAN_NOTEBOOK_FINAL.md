@@ -28,7 +28,7 @@ Le protocole commun conserve les années civiles : apprentissage 2016-2019, vali
 | Échantillon | Environ 500 000 lignes avant nettoyage, tirage par année et classe, périodes de septembre à septembre pour validation et test | Environ 200 000 événements d'apprentissage, années civiles et tirage d'événements distincts | Comparer les deux volumes sur les mêmes événements de validation |
 | Valeurs manquantes | Retrait des lignes avec plus de quatre prédicteurs manquants, puis imputation | Conservation des accidents sans météo admissible et traitement adapté au boosting | Garder ces accidents, car leur contexte reste informatif ; expliquer l'imputation pour la forêt |
 | Catégories | One-hot pour partager une représentation entre plusieurs modèles, regroupement des conditions météo rares | Catégories natives pour le boosting | Adapter la préparation au modèle et apprendre ses règles uniquement sur le train |
-| Modèles | Référence constante, logistique, boosting et forêt ; seuil F1 choisi sur validation | Boosting natif et référence constante dans le notebook principal, avec diagnostics temporels | Garder boosting et forêt dans la comparaison commune ; expliquer ce que la logistique de Kamar a apporté |
+| Modèles | Référence constante, logistique, boosting et forêt ; seuil F1 choisi sur validation | Boosting natif et référence constante dans le notebook principal, avec diagnostics temporels | Comparer référence, logistique, forêt et boosting ; LightGBM et XGBoost résumés à partir des résultats enregistrés |
 | Présentation | Étapes courtes et raisons des transformations | Contrôles de disponibilité, de cohérence et limites du protocole | Associer explication accessible et résultats vérifiables |
 
 La logistique de Kamar améliore la référence constante, puis ses deux modèles d'arbres donnent de meilleurs résultats sur sa validation. C'est un point d'appui concret pour expliquer pourquoi la version commune approfondit les arbres. Cela ne démontre pas à lui seul quelles interactions expliquent le gain.
@@ -38,7 +38,7 @@ La logistique de Kamar améliore la référence constante, puis ses deux modèle
 1. **Comprendre la cible et les données.** Définir l'impact sur le trafic, examiner les sources et regarder quelques exemples. S'appuyer sur l'exploration de Kamar et l'audit de Yanis pour expliquer Source2.
 2. **Discuter la préparation.** Montrer les choix de colonnes, les doublons et les valeurs manquantes. Expliquer la solution de Kamar puis la raison de conserver les accidents sans météo dans la version commune.
 3. **Poser la question de la météo.** Comparer la fenêtre de Kamar, de deux heures avant à deux heures après, à celle de Yanis, limitée aux observations antérieures. Introduire la fenêtre commune jusqu'à une heure après et son sens : une actualisation, avec une comparaison stricte au début.
-4. **Passer des premiers modèles à la comparaison commune.** Résumer ce qu'a montré la logistique de Kamar, puis comparer forêt et boosting sur la même validation. Expliquer les catégories natives et le one-hot avec un petit exemple.
+4. **Passer des premiers modèles à la comparaison commune.** Ajouter la logistique comme modèle linéaire, puis comparer forêt et boosting sur la même validation. Expliquer les catégories natives et le one-hot avec un petit exemple.
 5. **Approfondir quelques choix.** Examiner la capacité du boosting, puis vérifier l'effet du volume avec les mêmes réglages. Présenter le regroupement météo comme un ajustement secondaire. Cet ordre organise l'explication ; il ne prétend pas dater les essais personnels.
 6. **Évaluer et prendre du recul.** Figer les choix sur 2020, regarder les années suivantes et expliquer les erreurs restantes. Conclure sur les apprentissages du groupe et les limites.
 
@@ -63,7 +63,7 @@ Chaque cellule de code est précédée de quelques phrases sur son objectif, pui
 
 ## Choix soutenus par les comparaisons
 
-La recommandation actuelle est un HistGradientBoosting avec catégories natives, 500 000 événements, 63 feuilles au maximum par arbre, 400 itérations et un plafond de 25 conditions météo fréquentes. La forêt reste un concurrent réellement entraîné, avec imputation et one-hot. `Turning_Loop` est conservée, mais sa constance dans ce fichier signifie qu'elle ne fournit aucun signal appris.
+La recommandation actuelle est un HistGradientBoosting avec catégories natives, 500 000 événements, 63 feuilles au maximum par arbre, 400 itérations et un plafond de 25 conditions météo fréquentes. La forêt reste un concurrent réellement entraîné, avec imputation et one-hot. `Turning_Loop`, constante dans ce fichier, est retirée : 33 variables logiques.
 
 Le [bilan](RESULTATS_TESTS_NOTEBOOK_FINAL.md) explique les gains avec peu de chiffres. Pour le notebook, une comparaison du volume, un tableau final de modèles et une courbe précision-rappel suffisent à porter l'essentiel du récit. Des tableaux de réglages peuvent être ajoutés seulement s'ils répondent à une question que le texte ne rend pas claire.
 
@@ -135,7 +135,7 @@ Les passages suivants sont en anglais pour le livrable de cours, conformément a
 
 - Dictionnaire réalisé : 46 colonnes d'origine et quatre variables temporelles dérivées, avec sens, type, unité, rôle, disponibilité et traitement.
 - Tableaux avant/après du nettoyage, exemples météo/encodage et figures intégrés.
-- Analyse descriptive des erreurs par tranche horaire et diagnostic des niveaux 3/4 ajoutés. Les ablations sous le nouveau protocole, l'analyse par État et la calibration restent des pistes facultatives.
+- Analyse descriptive des erreurs par tranche horaire et diagnostic des niveaux 3/4 ajoutés. L'analyse par État est faite dans le notebook ; les ablations sous le nouveau protocole et la calibration restent des pistes futures.
 - Timestamps normalisés en nanosecondes dans le diagnostic de proximité, sans retrait de lignes.
 - Notebook exécuté dans un noyau neuf, résultats et figures vérifiés ; les notebooks individuels sont conservés.
 - Noms des trois membres et lien du dataset ajoutés. Le notebook reste sous 10 Mo ; les modules et dépendances sont réunis dans une archive sans données brutes.

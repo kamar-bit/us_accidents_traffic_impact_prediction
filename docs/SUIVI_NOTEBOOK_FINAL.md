@@ -56,13 +56,13 @@ Les deux préparations partagent Source2 et la cible Severity >= 3, mais diffèr
 | Volume | Comparaison demandée, recommandation fondée sur validation | 500 000 événements distincts ; train 200 000 imbriqué pour la comparaison |
 | Boosting | Catégories natives confirmées ; réglages recommandés | 63 feuilles au maximum, 400 itérations, taux 0,1, plafond de 25 conditions météo fréquentes |
 | Forêt | Comparaison demandée et réalisée | 100 arbres, minimum 5 exemples par feuille, médiane et one-hot dense float32 |
-| Logistique | Facultative dans la version commune | Expliquer son apport dans les travaux de Kamar ; elle n'a pas été ajoutée à la série commune |
-| Turning_Loop | Maintien décidé par Yanis | Conserver la colonne, en expliquant sa constance et son absence de signal appris dans ce fichier |
+| Logistique | Ajoutée au notebook final (C choisi sur 2020) | Sert de modèle linéaire de comparaison ; AP 2021 d'environ 0,564, contre 0,752 pour le boosting |
+| Turning_Loop | Retirée (constante dans le fichier) | Exclue des entrées : 33 variables logiques |
 | Métriques | Plusieurs métriques demandées | AP principale, ROC-AUC, précision/rappel/F1 ; distinguer le seuil et le budget top 10 % |
 | Présentation | Demandée par Yanis | Explication avant le code, interprétation après, tableaux et figures ciblés |
 | Dictionnaire | Réalisé | Toutes les colonnes brutes et variables dérivées, y compris celles exclues ou réservées à l'audit |
 
-La configuration recommandée utilise 500 000 événements d'apprentissage, 50 000 en validation, 99 999 en 2021 après exclusion d'un conflit et 50 000 sur 2022 partielle. Elle conserve 34 variables logiques, dont Turning_Loop. Les catégories manquantes et rares restent distinctes (Missing et Other), avec une fréquence minimale de 100 sur le train. Graine 42, proportions naturelles, aucun poids de classe ni arrêt précoce aléatoire.
+La configuration recommandée utilise 500 000 événements d'apprentissage, 50 000 en validation, 99 999 en 2021 après exclusion d'un conflit et 50 000 sur 2022 partielle. Elle utilise 33 variables logiques (Turning_Loop, constante, est retirée). Les catégories manquantes et rares restent distinctes (Missing et Other), avec une fréquence minimale de 100 sur le train. Graine 42, proportions naturelles, aucun poids de classe ni arrêt précoce aléatoire.
 
 La sélection utilise uniquement l'AP de 2020, puis les paramètres et les seuils restent figés pour les années suivantes. Le seuil F1 du boosting est d'environ 0,384. Le F1 de validation bénéficie de cet ajustement sur la même période. La recherche reste limitée aux configurations examinées.
 
@@ -82,7 +82,7 @@ L'AP n'est pas un taux de bonnes classifications. La colonne pr_auc de Kamar uti
 
 Les comparaisons de volume, de modèles, de capacité des arbres, de plafonds météo et de fenêtres sont réalisées. Le [bilan](RESULTATS_TESTS_NOTEBOOK_FINAL.md) en conserve une lecture courte. Les protocoles, paramètres, diagnostics et résultats complets restent dans `results/final_notebook_comparison/`. Les notebooks individuels n'ont pas été modifiés pour cette reformulation documentaire.
 
-Le [notebook final](../notebooks/FINAL_NOTEBOOK.ipynb) est construit : dictionnaire complet, exemples de transformations, modèles réentraînés, figures et analyse des erreurs par tranche horaire. Les erreurs par État, la calibration et les ablations sous le nouveau protocole restent facultatives. Les analyses historiques ne suffisent pas à conclure sur la nouvelle fenêtre météo.
+Le [notebook final](../notebooks/FINAL_NOTEBOOK.ipynb) est construit : dictionnaire complet, exemples de transformations, modèles réentraînés, figures et analyse des erreurs par tranche horaire. Les erreurs par État et la comparaison LightGBM/XGBoost (résultats enregistrés) y figurent. La calibration et les ablations sous le nouveau protocole restent des pistes de travail futur. Les analyses historiques ne suffisent pas à conclure sur la nouvelle fenêtre météo.
 
 Le diagnostic de proximité normalise ses timestamps en nanosecondes avant les tranches de quinze minutes. Ce diagnostic ne retire pas de lignes. Le notebook a été exécuté dans un noyau neuf ; ses sorties et figures ont été relues. Le [mode d'emploi](MODE_EMPLOI_NOTEBOOK_FINAL.md) décrit la reproduction et l'archive de remise.
 

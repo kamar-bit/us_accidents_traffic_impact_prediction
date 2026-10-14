@@ -50,7 +50,7 @@ existant. Pour produire une nouvelle ébauche, lui fournir un autre chemin avec
 `--output`. Les notebooks individuels restent séparés du rendu commun.
 
 Le protocole final diffère du notebook historique : 33 variables logiques
-(Turning_Loop, toujours fausse, est exclue), actualisation météo dans l'heure,
+(Turning_Loop, toujours fausse, est exclue ; 33 variables), actualisation météo dans l'heure,
 500 000 événements et comparaison boosting/forêt/régression logistique.
 Les documents historiques du dépôt conservent leurs propres résultats.
 

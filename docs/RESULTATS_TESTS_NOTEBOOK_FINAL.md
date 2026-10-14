@@ -39,6 +39,7 @@ L'AP mesure la qualité du classement des accidents à fort impact. Elle ne repr
 | Modèle | AP validation 2020 | AP historique 2021 |
 | --- | ---: | ---: |
 | Référence constante | 0,303 | 0,343 |
+| Régression logistique | 0,55 | 0,564 |
 | Forêt sélectionnée | 0,696 | 0,710 |
 | Boosting sélectionné | 0,748 | 0,752 |
 
@@ -50,7 +51,7 @@ Les résultats de classement sont proches sur la partie disponible de 2022. Cela
 
 Les approches individuelles ont permis d'examiner des solutions différentes, puis d'en discuter sur une base commune. L'exploration et les premiers modèles de Kamar rendent les choix de préparation concrets. Les contrôles temporels et les événements distincts de Yanis rendent les comparaisons plus faciles à interpréter. Le notebook final doit montrer ce lien entre une question, une observation et une décision.
 
-La recommandation actuelle est donc un boosting natif sur 500 000 événements, avec la forêt comme comparaison et la référence constante pour situer les scores. Elle vaut pour les configurations examinées. La série ne démontre ni un optimum global ni la nécessité de toutes les variables. `Turning_Loop` reste dans la définition des entrées, mais elle est constante et n'apporte aucun signal appris dans ce fichier.
+La recommandation actuelle est donc un boosting natif sur 500 000 événements, avec la forêt comme comparaison et la référence constante pour situer les scores. Elle vaut pour les configurations examinées. La série ne démontre ni un optimum global ni la nécessité de toutes les variables. `Turning_Loop`, constante dans ce fichier, est retirée des entrées (33 variables).
 
 La majorité des positifs sont de niveau 3. Les résultats binaires agrégés renseignent moins bien sur le niveau 4, rare. Les probabilités ne sont pas calibrées, et l'instant de publication des informations reste inconnu. Ces limites fournissent des pistes de travail : analyser les erreurs, étudier la calibration et évaluer sur une période ultérieure indépendante.
 

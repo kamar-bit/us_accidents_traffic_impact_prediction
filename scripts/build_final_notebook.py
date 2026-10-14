@@ -34,21 +34,22 @@ def build():
 
     ## 1. Introduction
 
-    Can the context of an accident help us identify a high impact on traffic?
-    Our target is **Severity 3 or 4 versus Severity 1 or 2**. It describes traffic
-    disruption, rather than injuries or the risk that an accident will occur.
+    Can the context of an accident tell us whether it will have a high impact on
+    traffic? Our target is **Severity 3 or 4 versus Severity 1 or 2**. Severity
+    describes the disruption to traffic, not the injuries and not the risk that an
+    accident happens.
 
-    We developed separate approaches and brought them together. Kamar explored
-    the columns and missing values, prepared a larger sample, and compared
-    logistic regression with two tree models. Yanis focused on time-based
-    evaluation, repeated events and boosting with native categorical features.
-    Their differences gave us concrete questions: which records should we keep,
-    how should we encode categories, and does a larger sample help?
+    We first worked on separate approaches and then merged them. Kamar explored the
+    columns and the missing values, prepared a larger sample and compared logistic
+    regression with two tree models. Yanis worked on time-based evaluation, repeated
+    events and boosting with native categories. Their differences gave us three
+    questions: which records should we keep, how should we encode categories, and
+    does a larger sample help?
 
-    This notebook develops the common approach step by step. We use Source2,
-    compare boosting with a random forest and a logistic regression reference,
-    and explain the choices supported by validation. Weather is examined both at accident start and in an update
-    allowing an observation up to one hour later.
+    This notebook builds the common approach step by step. We use Source2 only and
+    compare gradient boosting with a random forest and a logistic regression. Weather
+    is used in two ways: only what was observed before the accident started, or also
+    an update up to one hour after the start.
 
     Dataset: [US Accidents, March 2023 version](https://www.kaggle.com/datasets/sobhanmoosavi/us-accidents).
     Severity definition: [creator metadata](https://www.kaggle.com/sobhanmoosavi/us-accidents/metadata).
@@ -56,43 +57,57 @@ def build():
     md('''
     ### Related work and our contribution
 
-    Moosavi et al., [A Countrywide Traffic Accident Dataset (2019)](https://arxiv.org/abs/1906.05409),
-    introduced US-Accidents with time, location, weather and nearby points of
-    interest. Its original release is smaller than the March 2023 file we use.
-    Their [Accident Risk Prediction based on Heterogeneous Sparse Data (2019)](https://arxiv.org/abs/1909.09638)
-    describes a deep learning approach to predicting accident occurrence, which
-    differs from predicting the traffic impact of an already recorded accident.
-    These points come from the abstracts; we have not read the full articles and
-    do not compare their scores with ours.
+    **The dataset papers.** Moosavi et al., [A Countrywide Traffic Accident Dataset (2019)](https://arxiv.org/abs/1906.05409),
+    introduced US-Accidents with time, location, weather and nearby points of interest;
+    its first release is smaller than the March 2023 file we use. Their
+    [Accident Risk Prediction based on Heterogeneous Sparse Data (2019)](https://arxiv.org/abs/1909.09638)
+    describes a deep learning model that predicts whether an accident will occur, which is
+    a different task from predicting the traffic impact of an accident that is already
+    recorded. We read only the abstracts and do not compare scores with ours.
 
-    Many public notebooks also predict severity on this dataset. We have not
-    reviewed them systematically, so we cite none of their scores. We suspect
-    that some very high public results rely on random splits or on fields
-    recorded after the accident, such as its end time, distance or description.
-    This is a hypothesis we have not demonstrated, not a finding.
+    **Public projects on the same file.** We read the README of three public GitHub
+    projects on 14 October 2026. We did not re-run their code.
 
-    We do not expect to beat a published score; our contribution lies in the
-    method. We evaluate in chronological order, because the labels drift
-    between sources and years. We check which information is available at
-    prediction time, especially weather timestamps. We measure which groups of
-    inputs the model relies on, and we use metrics suited to an imbalanced
-    target. We use existing algorithms and focus on understanding what the data
-    and the results allow us to conclude.
+    | Project | Target and split | Notable inputs | Reported result |
+    | --- | --- | --- | --- |
+    | [Atharva-Penkar](https://github.com/Atharva-Penkar/US-accidents-severity-analysis-and-prediction) | Severity 1 to 4, random 70/15/15 split | `Source` and `Year`, kept on purpose | XGBoost: macro F1 0.735, accuracy 0.908; macro F1 0.575 without `Source` and `Year` |
+    | [Sams-Alt-Personality](https://github.com/Sams-Alt-Personality/US-Accidents-CountryWide-Dataset) | Severity 1 to 4, sample of 300,000 accidents from 2022-2023, random 80/20 split | `Duration_Minutes` (built from the end time) and `Year` | Random forest: accuracy 0.939, macro F1 0.588, recall 0.06 on Severity 4 |
+    | [rayenchanchah01](https://github.com/rayenchanchah01/US_accidents) | Severity 1 to 4, 70/15/15 split and a temporal check planned | removes end time, distance and description as leakage | data preparation only, no model scores yet |
+
+    These scores cannot be compared with ours: the targets (four classes against two),
+    the splits (random against chronological) and the inputs are different. They still
+    teach us two things that shape this notebook. First, the source and the year carry a
+    large part of the score. The first project goes from macro F1 0.735 to 0.575 when it
+    removes them, and the third reports that Source2 labels 34% of its accidents
+    Severity 3 against 4% for Source1. This is why we keep Source2 only and evaluate in
+    chronological order. Second, a high accuracy on four classes mostly reflects the
+    dominant Severity 2 (about 92% of the accidents in the second project's sample), and
+    the duration of an incident is only known once it has ended. We therefore use
+    average precision on a binary target, and only inputs that are available at the
+    prediction time.
+
+    **Our contribution.** We do not expect to beat a published score; our contribution
+    lies in the method. We evaluate in chronological order, because the labels drift
+    between sources and years. We check which information is available at prediction
+    time, especially for the weather timestamps. We measure which groups of inputs the
+    model relies on, and we use metrics suited to an imbalanced target. We use existing
+    algorithms and focus on understanding what the data and the results allow us to
+    conclude.
     ''')
     step('''
     ## 2. Preprocessing
 
     ### 2.1 Set up one common configuration
 
-    We keep the main choices together so the study is easy to reproduce. The CSV
-    is kept locally and is not part of the submission. Install
-    `requirements-final-notebook.txt` and open the notebook within the project.
-    Python modules handle reusable data access; the main transformations and
-    model training remain visible below.
+    We keep the main choices in one place so the study is easy to reproduce. The CSV
+    stays on the local machine and is not part of the submission. Install
+    `requirements-final-notebook.txt` and open the notebook inside the project.
+    The `traffic_impact/` modules only read and sample the file; the preparation
+    and the models are written in this notebook.
     ''', '''
     import os
     for name in ["OMP_NUM_THREADS", "OPENBLAS_NUM_THREADS", "MKL_NUM_THREADS"]:
-        os.environ[name] = "4"
+        os.environ[name] = "4"  # keep the number of threads small
     from pathlib import Path
     import sys, json, itertools, gc, time
     import numpy as np
@@ -106,6 +121,9 @@ def build():
         precision_recall_curve, precision_score, recall_score, f1_score, confusion_matrix)
     from threadpoolctl import threadpool_limits
 
+    threadpool_limits(limits=4)  # one thread limit for every model below
+
+    # Find the project folder, the one that contains traffic_impact/.
     ROOT = Path.cwd().resolve()
     if (ROOT / "us_accidents_traffic_impact_prediction/traffic_impact").is_dir():
         ROOT = ROOT / "us_accidents_traffic_impact_prediction"
@@ -127,17 +145,16 @@ def build():
     display(pd.Series({"Training events": TRAIN_N, "Weather update (minutes)": WEATHER_AFTER,
         "Weather category limit": WEATHER_CAP, "Seed": SEED}, name="Common choices").to_frame())
     ''', '''
-    The configuration uses a fixed seed and keeps the natural class proportions.
-    Time and location always refer to the accident start; only the weather window
-    changes between the two scenarios.
+    We use a fixed seed and keep the natural class proportions. Time and location
+    always refer to the accident start; only the weather window changes between the
+    two scenarios.
     ''')
     step('''
     ### 2.2 Look at the original records
 
     Kamar began by reading a small part of the file before loading larger samples.
-    We keep this useful first step: identify the columns and their units, then
-    inspect a few records. The first rows illustrate the format; they are not a
-    representative sample for drawing conclusions.
+    We keep this first step: identify the columns and their units, then look at a
+    few records. These first rows only show the format; they are not representative.
     ''', '''
     preview = pd.read_csv(CSV_PATH, nrows=5)
     dictionary = data_dictionary(preview.columns)
@@ -153,26 +170,25 @@ def build():
                      "temperature, visibility, wind, conditions"]})
     display(input_groups)
     ''', '''
-    The file mixes numerical measurements, categories, flags and timestamps.
-    Units such as Fahrenheit, miles and inches are kept as recorded. The five
-    groups give 33 logical inputs. The road group leaves out Turning_Loop, which
-    is always False in the audited file. The complete dictionary in the appendix
-    defines every original column, including fields we exclude, and the four
-    derived time variables.
+    The file mixes numerical measurements, categories, flags and timestamps. Units
+    such as Fahrenheit, miles and inches are kept as recorded. The five groups give
+    33 logical inputs; the road group leaves out Turning_Loop, which is always False
+    in the audited file. The dictionary in Appendix A defines every original column,
+    including the ones we exclude, and the four derived time variables.
     ''')
     step('''
     ### 2.3 Work with distinct events
 
-    We read the full file in blocks when samples must be prepared. Uniform event
-    priorities with seed 42 select distinct Source2 events within each period.
-    Priorities do not depend on Severity. The 200,000-event sample will be a
-    subset of the 500,000-event sample.
+    We read the full file in blocks when the samples must be prepared. Within each
+    period we draw distinct Source2 events at random (seed 42), using a priority
+    number that does not depend on Severity. The 200,000-event sample is a subset of
+    the 500,000-event sample.
 
-    An event key uses Source, start/end time, start coordinates, Distance and
-    Description, without Severity. Repeated copies are grouped; events with
-    conflicting Severity labels are excluded, even if their binary labels agree.
-    Some identity fields are excluded from prediction. Nearby accidents are not
-    automatically treated as the same event.
+    An event is identified by Source, start and end time, start coordinates,
+    Distance and Description, but not Severity. Repeated copies of an event are
+    merged, and events whose copies have different Severity labels are removed, even
+    if their binary labels agree. These identity fields are not used as predictors.
+    Nearby accidents are not treated as the same event.
     ''', '''
     raw, audit, AUDIT_FOLDER = load_samples(CSV_PATH, WORK)
     raw["train"] = raw["train"].nsmallest(TRAIN_N, "_priority").sort_values("_t").reset_index(drop=True)
@@ -182,18 +198,18 @@ def build():
         "Conflicting Source2 event keys": audit["source2_conflicting_event_keys"]}, name="Full-file audit")
     display(audit_summary.to_frame())
     ''', '''
-    The full-file audit distinguishes repeated events from record identifiers.
-    All copies of a conflicting event are excluded because the file does not
-    tell us which label is correct. Sampling keeps the study manageable without
-    forcing the two classes to have equal sizes. Verified caches are reused when
-    the CSV, preparation code, environment and file hashes match.
+    The audit of the whole file separates repeated events from record identifiers.
+    We remove all copies of a conflicting event because the file does not say which
+    label is right. Sampling keeps the study manageable and keeps the natural class
+    proportions. Saved samples are reused only if the CSV, the preparation code, the
+    environment and the file hashes match.
     ''')
     step('''
     ### 2.4 Compare sources before choosing the study population
 
-    Both individual approaches examined the providers. We plot the proportion
-    of positive labels by source and year, using the full-file audit. This helps
-    us decide whether mixing sources would make the target difficult to interpret.
+    Both individual approaches looked at the data providers. We plot the share of
+    positive labels by source and year, using the audit of the whole file. This
+    shows whether mixing sources would make the target hard to interpret.
     ''', '''
     source_month = pd.read_csv(AUDIT_FOLDER / "monthly_source_severity.csv")
     source_month["year"] = pd.to_numeric(source_month["_month"].str[:4], errors="coerce")
@@ -210,22 +226,22 @@ def build():
     plt.savefig(FIGURES / "01_sources.png")
     plt.show()
     ''', '''
-    The sources have different label distributions and changes over time.
-    We focus on Source2 to give the study a clear scope. This does not establish
-    the cause of changes in other sources, or prove that Source2 is always better.
+    The sources have different label distributions, and these change over time. We
+    focus on Source2 to give the study a clear scope. This does not explain the
+    changes in the other sources and does not prove that Source2 is better.
     Source2 ends in September 2022, so our last period is incomplete.
     ''')
     step('''
     ### 2.5 Clean invalid values without deleting incomplete weather records
 
-    Kamar removed rows with more than four missing predictors, then filled the
-    remaining gaps using training statistics. For the common study, we keep
-    records without weather: their time, location and road context remain useful.
-    This avoids selecting only accidents whose weather is better documented.
+    Kamar removed rows with more than four missing predictors and filled the
+    remaining gaps with training statistics. In the common study we keep the records
+    without weather: their time, location and road context are still useful, and we
+    avoid keeping only the accidents whose weather is better documented.
 
-    A valid date and a label in 1-4 are required. Impossible coordinates, humidity
-    or negative physical measurements become missing; plausible extremes remain.
-    We do not impute the target. Temperature has no arbitrary cutoff.
+    A record needs a valid date and a label from 1 to 4. Impossible coordinates or
+    humidity and negative physical measurements become missing; plausible extreme
+    values stay. We never impute the target, and temperature has no arbitrary cutoff.
     ''', '''
     raw_clean, cleaning_rows, invalid_rows = {}, [], []
     bounds = {"Start_Lat": (-90, 90), "Start_Lng": (-180, 180), "Humidity(%)": (0, 100),
@@ -251,19 +267,18 @@ def build():
     cleaning.to_csv(REPORTS / "record_cleaning.csv", index=False)
     invalid.to_csv(REPORTS / "numeric_cleaning.csv", index=False)
     ''', '''
-    These samples contain no invalid dates, labels or values under the specified
-    physical bounds, so this cleaning step keeps their records unchanged. This
-    does not guarantee that the entire file is error-free. Keeping incomplete weather is a
-    choice about the population studied, not a measured victory over Kamar's
-    row-removal policy.
+    These samples contain no invalid dates, labels or values under the physical
+    bounds above, so this step changes nothing here. That does not prove the whole
+    file is error-free. Keeping incomplete weather is a choice about which accidents
+    we study; we did not show that it beats Kamar's row-removal policy.
     ''')
     step('''
     ### 2.6 Keep the evaluation in chronological order
 
-    Kamar used full evaluation years with boundaries in September; Yanis used
-    calendar years. The common study keeps calendar years for clarity. We learn
-    on 2016-2019, compare settings on 2020, and examine 2021 and the available
-    part of 2022 afterwards. Labels remain separate from predictors.
+    Kamar used evaluation years that start and end in September; Yanis used calendar
+    years. The common study keeps calendar years because they are simpler to explain.
+    We learn on 2016-2019, compare settings on 2020, and look at 2021 and the
+    available part of 2022 afterwards. Labels stay separate from the predictors.
     ''', '''
     period_names = {"train": "2016-2019 (train)", "validation": "2020 (validation)",
         "test": "2021 (historical)", "stress": "2022 to Sep 8"}
@@ -289,22 +304,18 @@ def build():
     plt.savefig(FIGURES / "02_levels.png")
     plt.show()
     ''', '''
-    Around one third of the sampled accidents belong to the positive class, so
-    accuracy alone would be insufficient. Most positive records are Severity 3;
-    Severity 4 is rare. The share of Severity 1 also changes in 2022. Later-year
-    results must be read with these population differences in mind. The project
-    has already examined 2021 and 2022; these are historical evaluations, not new
-    independent tests.
+    About one third of the sampled accidents are positive, so accuracy alone would
+    be misleading. Most positives are Severity 3; Severity 4 is rare. The share of
+    Severity 1 also changes in 2022. We already looked at 2021 and 2022 during the
+    project, so they are historical evaluations, not new independent tests.
 
-    2020, our validation year, is less positive than the training years and the
-    two later years. The COVID-19 period may have changed traffic and recording,
-    but this is a hypothesis we have not demonstrated. The difference matters in
-    two ways. AP and ROC-AUC measure how well a model ranks accidents, so they
-    remain comparable in spirit across years, although AP also depends on the
-    positive share. The F1 threshold, however, is fixed on 2020 and then applied
-    to more positive years, where it is not re-optimised. 2022 also stops on
-    8 September, so it covers only part of a year. 2021 is therefore our complete
-    reference year for evaluation.
+    2020, our validation year, has fewer positives than the other years. The
+    COVID-19 period may have changed traffic and recording, but we have not shown
+    this. It matters for two reasons. AP and ROC-AUC measure how well accidents are
+    ranked, so they can be compared across years, although AP also depends on the
+    positive share. The F1 threshold, however, is fixed on 2020 and then applied to
+    years with more positives without being tuned again. Finally, 2022 stops on
+    8 September, so 2021 is our only complete evaluation year.
     ''')
     step('''
     ### 2.7 Derive features that describe the accident context
@@ -337,11 +348,11 @@ def build():
     plt.savefig(FIGURES / "03_hour.png")
     plt.show()
     ''', '''
-    The curve describes an association in the training data, not a causal effect
-    of the hour. We do not include the year as a predictor. Turning_Loop is
-    always False in the audited file, so it cannot provide any signal; it is
-    excluded from the 33 inputs in 2.12. Day/night indicators describe natural
-    light at the start, not artificial road lighting.
+    The curve shows an association in the training data, not a causal effect of the
+    hour. We do not use the year as a predictor. Turning_Loop is always False in the
+    audited file, so it carries no signal and is left out, which gives 33 inputs
+    (see 2.11). The day/night indicators describe natural light at the start, not
+    artificial road lighting.
     ''')
     step('''
     ### 2.8 Clarify the two weather scenarios with an example
@@ -359,10 +370,10 @@ def build():
     example["With update"] = example["Offset (minutes)"].between(-120, 60)
     display(example)
     ''', '''
-    This is an illustrative example, not five sampled accidents. A 10:30
-    observation cannot be used for a prediction at 10:00. The update is a later
-    prediction; even an eligible timestamp does not establish when the reading
-    was published. Other future fields do not receive this weather exception.
+    This is an illustrative example, not five sampled accidents. A 10:30 observation
+    cannot be used for a prediction made at 10:00, so the update describes a later
+    prediction. Even an eligible timestamp does not tell us when the reading was
+    published. Other fields from the future do not get this weather exception.
     ''')
     step('''
     ### 2.9 Apply the weather rule and harmonise wind labels
@@ -373,11 +384,15 @@ def build():
     ''', '''
     aliases = {"NORTH": "N", "SOUTH": "S", "EAST": "E", "WEST": "W",
         "CALM": "Calm", "VAR": "Variable", "VARIABLE": "Variable"}
-    def weather_features(frame, after=60):
-        result = initial_features(frame)
+
+    def weather_offset(frame):
+        """Minutes between the accident start and its associated weather observation."""
         observed = pd.to_datetime(frame.Weather_Timestamp, format="mixed", errors="coerce")
-        offset = (observed - frame["_t"]).dt.total_seconds() / 60
-        eligible = offset.between(-120, after)
+        return (observed - frame["_t"]).dt.total_seconds() / 60
+
+    def mask_weather(inputs, eligible):
+        """Keep the weather fields only when the observation falls inside the window."""
+        result = inputs.copy()
         for column in WNUM:
             result[column] = pd.to_numeric(result[column], errors="coerce").where(eligible)
         for column in WCAT:
@@ -385,15 +400,15 @@ def build():
             if column == "Wind_Direction":
                 values = values.str.strip().str.upper().replace(aliases)
             result[column] = values.where(eligible)
-        return result, eligible
+        return result
 
     features, weather_rows = {}, []
     for split, frame in raw_clean.items():
-        features[split], _ = weather_features(frame, WEATHER_AFTER)
+        offset = weather_offset(frame)
+        features[split] = mask_weather(initial[split], offset.between(-120, WEATHER_AFTER))
         for after, scenario in [(0, "At start"), (WEATHER_AFTER, "With update")]:
-            _, eligible = weather_features(frame, after)
             weather_rows.append({"Period": period_names[split], "Scenario": scenario,
-                "Eligible timestamps (%)": round(100 * eligible.mean(), 1)})
+                "Eligible timestamps (%)": round(100 * offset.between(-120, after).mean(), 1)})
     weather_table = pd.DataFrame(weather_rows)
     display(weather_table[weather_table.Period.eq(period_names["validation"])])
     weather_table.to_csv(REPORTS / "weather_coverage.csv", index=False)
@@ -431,72 +446,28 @@ def build():
     not show that missingness itself causes higher or lower traffic impact.
     ''')
     step('''
-    ### 2.11 Prepare a temperature fill for missing wind chill
-
-    The US National Weather Service wind chill formula is only defined for a
-    temperature of at most 50 °F and a wind of at least 3 mph. Otherwise, the
-    felt temperature is simply the air temperature. A missing wind chill
-    therefore often means "same as the temperature", not "unknown". Its missing
-    share also drifts strongly over time, as the table below shows.
-
-    For the forest and the logistic regression only, we prepare a version where
-    a missing Wind_Chill(F) takes Temperature(F) from the same row. This happens
-    after the weather rule of 2.9, so a masked observation stays masked. The
-    training median is applied afterwards, only when the temperature is missing
-    too. Boosting keeps its native missing values.
-    ''', '''
-    def fill_wind_chill(frame):
-        result = frame.copy()
-        result["Wind_Chill(F)"] = result["Wind_Chill(F)"].fillna(result["Temperature(F)"])
-        return result
-
-    filled = {s: fill_wind_chill(frame) for s, frame in features.items()}
-    wind_chill = pd.concat([pd.DataFrame({"Year": raw_clean[s]._t.dt.year,
-        "Recorded missing (%)": initial[s]["Wind_Chill(F)"].isna(),
-        "After weather rule (%)": features[s]["Wind_Chill(F)"].isna(),
-        "After temperature fill (%)": filled[s]["Wind_Chill(F)"].isna()}) for s in features])
-    wind_chill_table = (100 * wind_chill.groupby("Year").mean()).round(1)
-    display(wind_chill_table)
-    wind_chill_table.to_csv(REPORTS / "wind_chill_missing_by_year.csv")
-    train_weather = features["train"]
-    temperature, chill = train_weather["Temperature(F)"], train_weather["Wind_Chill(F)"]
-    outside_formula = (chill.notna() & temperature.notna() & train_weather["Wind_Speed(mph)"].notna()
-        & (temperature.gt(50) | train_weather["Wind_Speed(mph)"].lt(3)))
-    same = (chill[outside_formula] - temperature[outside_formula]).abs().le(0.5).mean()
-    display(Markdown(f"Recorded wind chill is missing for **{wind_chill_table.loc[2016].iloc[0]:.1f}%** "
-        f"of sampled 2016 accidents and **{wind_chill_table.loc[2020].iloc[0]:.1f}%** in 2020. "
-        f"In training, where both values are recorded outside the formula's domain, wind chill "
-        f"equals the temperature (within 0.5 °F) for **{100 * same:.1f}%** of accidents."))
-    ''', '''
-    Outside the formula's domain, the recorded values confirm the rule. After
-    the fill, the remaining missing share is small and much more stable across
-    years, so far fewer accidents would receive the single training median.
-    That median is not a leak either: it is computed on 2016-2019 only. The fill
-    uses another field of the same accident, so no later information enters.
-    Whether the fill helps prediction is a separate question: we compare both
-    options on 2020 with the forest in 3.4 and keep the better one.
-    ''')
-    step('''
-    ### 2.12 Learn categorical vocabularies on training data only
+    ### 2.11 Learn categorical vocabularies on training data only
 
     We keep Kamar's idea of grouping rare weather conditions into Other. A category
-    needs at least 100 training occurrences; Weather_Condition keeps at most the
-    25 most frequent eligible labels. Missing is separate from Other. Later data
-    cannot change the vocabulary. Numerical and road inputs use compact types.
+    needs at least 100 training occurrences, and Weather_Condition keeps at most the
+    25 most frequent labels. Missing is kept apart from Other. Later periods cannot
+    change the category lists. Numerical and road inputs use compact types.
     ''', '''
     class CategoryPreparation:
+        """Learn the category lists on the training period, then apply them to any period."""
         def __init__(self, weather_cap=25):
             self.weather_cap = weather_cap
 
         def fit(self, frame):
+            # Inputs that never change in training (Turning_Loop) are dropped.
             self.columns = [c for c in frame if frame[c].nunique(dropna=False) > 1]
             self.vocab = {}
             for column in self.columns:
                 if pd.api.types.is_string_dtype(frame[column].dtype):
                     counts = frame[column].value_counts()
-                    keep = counts[counts >= 100].index.tolist()
+                    keep = counts[counts >= 100].index.tolist()   # at least 100 training events
                     if column == "Weather_Condition":
-                        keep = keep[:self.weather_cap]
+                        keep = keep[:self.weather_cap]            # most frequent conditions only
                     self.vocab[column] = [str(v) for v in keep if v not in ["Missing", "Other"]]
             return self
 
@@ -516,19 +487,18 @@ def build():
     display(pd.DataFrame([{"Feature": c, "Retained training labels": len(v),
         "Missing label": "Missing", "Rare/unseen label": "Other"} for c, v in category_prep.vocab.items()]))
     ''', '''
-    The vocabulary has been learned once, then reused for all periods. The native
-    categorical dtype tells boosting that categories have no numerical order.
-    Columns that are constant in training are dropped, which removes Turning_Loop
-    and leaves 33 logical inputs. We have not demonstrated that each of them is
-    necessary.
+    The category lists are learned once and reused for all periods. The native
+    categorical type tells boosting that categories have no numerical order. Columns
+    that are constant in training are dropped, which removes Turning_Loop and leaves
+    33 logical inputs. We have not shown that each of them is necessary.
     ''')
     step('''
-    ### 2.13 Make the transformations concrete
+    ### 2.12 Make the transformations concrete
 
-    We inspect a few real category transformations and a small one-hot example.
-    One-hot creates an indicator for each category: it avoids inventing an order
-    between states, but increases the number of columns. We adapt the preparation
-    to each model rather than assuming one representation is always best.
+    We look at a few real category transformations and at a small one-hot example.
+    One-hot creates one indicator per category: it does not invent an order between
+    states, but it adds columns. We adapt the preparation to each model instead of
+    assuming one representation is best for all of them.
     ''', '''
     transformed = pd.DataFrame({"Recorded wind": raw_clean["train"].Wind_Direction.astype("string"),
         "After weather/spelling rule": features["train"].Wind_Direction,
@@ -542,11 +512,11 @@ def build():
         {"Step": "Missing categorical value", "Output": "Missing"}])
     display(transformation_summary)
     ''', '''
-    The wind table shows observed transformations. The three-state table is a
-    teaching example. One-hot does not add new observations or fill weather gaps.
-    We use native categories for boosting and one-hot for the forest and the
-    logistic regression. The study
-    does not directly compare these two encodings with the same boosting model.
+    The wind table shows real transformations. The three-state table is only a
+    teaching example. One-hot adds no new observations and does not fill weather
+    gaps. We use native categories for boosting and one-hot for the forest and the
+    logistic regression. We did not compare the two encodings with the same boosting
+    model.
     ''')
     md('''
     ## 3. Training
@@ -568,28 +538,27 @@ def build():
     ### 3.1 Check model capacity, then training volume
 
     Boosting builds trees one after another, each correcting the errors of the
-    previous ones. A larger leaf limit lets each tree distinguish more
-    combinations of conditions. More iterations add correction steps, but both
-    choices can lead to fitting training details too closely. We fit three
-    settings on 2016-2019 and compare their AP on 2020. All other parameters are
-    those of the main model, and the 63-leaf, 400-iteration model is the main
-    model itself, reused in the rest of the notebook.
+    previous ones. A larger leaf limit lets a tree separate more combinations of
+    conditions, and more iterations add more correction steps. Both can also make the
+    model fit details of the training data too closely. We fit three settings on
+    2016-2019 and compare their AP on 2020. Everything else is the same as in the
+    main model, and the 63-leaf, 400-iteration model is the main model itself, used
+    in the rest of the notebook.
     ''', '''
     boosting_settings = {"max_iter": 400, "max_leaf_nodes": 63, "learning_rate": 0.1,
         "categorical_features": "from_dtype", "early_stopping": False, "random_state": SEED}
-    boosting = HistGradientBoostingClassifier(**boosting_settings)
-    capacity_rows = []
-    with threadpool_limits(limits=4):
-        for leaves, iterations in [(31, 200), (63, 200), (63, 400)]:
-            settings = {**boosting_settings, "max_leaf_nodes": leaves, "max_iter": iterations}
-            model = boosting if settings == boosting_settings else HistGradientBoostingClassifier(**settings)
-            start = time.perf_counter()
-            model.fit(X["train"], y["train"])
-            fit_seconds = time.perf_counter() - start
-            capacity_rows.append({"Maximum leaves": leaves, "Iterations": iterations,
-                "Validation AP": average_precision_score(y["validation"], model.predict_proba(X["validation"])[:, 1]),
-                "Fit seconds": fit_seconds})
-    del model
+    capacity_rows, capacity_models = [], {}
+    for leaves, iterations in [(31, 200), (63, 200), (63, 400)]:
+        model = HistGradientBoostingClassifier(
+            **{**boosting_settings, "max_leaf_nodes": leaves, "max_iter": iterations})
+        start = time.perf_counter()
+        model.fit(X["train"], y["train"])
+        fit_seconds = time.perf_counter() - start
+        capacity_models[(leaves, iterations)] = model
+        capacity_rows.append({"Maximum leaves": leaves, "Iterations": iterations,
+            "Validation AP": average_precision_score(y["validation"], model.predict_proba(X["validation"])[:, 1]),
+            "Fit seconds": fit_seconds})
+    boosting = capacity_models[(63, 400)]  # the main model
     capacity = pd.DataFrame(capacity_rows)
     display(capacity.round({"Validation AP": 3, "Fit seconds": 0}))
     capacity.to_csv(REPORTS / "boosting_capacity.csv", index=False)
@@ -598,22 +567,21 @@ def build():
     volume = validation_trials.set_index("name").loc[volume_names, ["train_n", "ap"]]
     display(volume.rename(columns={"train_n": "Training events", "ap": "Validation AP"}).reset_index(drop=True).round(3))
     ''', '''
-    The capacity table is computed in this execution. It supports 63 leaves per
-    tree and 400 iterations, at a higher training cost. The volume table is
-    different: it reports results recorded in our earlier common comparisons,
-    not recomputed here. With the selected settings, the larger sample improved
-    validation AP, so we retain 500,000 events. We learn from changing one aspect
-    while keeping the comparison conditions clear; the results do not establish
-    a universal optimum.
+    The capacity table is computed in this run. It supports 63 leaves per tree and
+    400 iterations, at a higher training cost. The volume table is different: it
+    reports results recorded in our earlier common comparisons and is not recomputed
+    here. With the selected settings, the larger sample improved the validation AP,
+    so we keep 500,000 events. We changed one thing at a time; these results do not
+    show a universal optimum.
     ''')
     step('''
     ### 3.2 Refine the weather grouping and check the prediction-time tradeoff
 
-    The number of frequent Weather_Condition labels is a separate preparation
-    choice. We also compare the strict and updated weather scenarios at the
-    reference model settings. Each question has a small table, with one metric
-    and no execution log. Both tables report results recorded in our earlier
-    common comparisons; they are not recomputed in this notebook.
+    The number of frequent Weather_Condition labels is a separate preparation choice.
+    We also compare the strict and the updated weather scenarios at the reference
+    model settings. Each question has a small table with one metric. Both tables
+    report results recorded in our earlier common comparisons; they are not
+    recomputed in this notebook.
     ''', '''
     category_names = ["e20_hgb_500000_w60_c10_refined", "e12_hgb_500000_w60_c15", "e21_hgb_500000_w60_c25_refined"]
     categories = validation_trials.set_index("name").loc[category_names, ["cap", "ap"]]
@@ -623,11 +591,11 @@ def build():
     weather_comparison.index = ["At start", "With update"]
     display(weather_comparison.rename(columns={"after": "Minutes after start allowed", "ap": "Validation AP"}).round(3))
     ''', '''
-    The limit of 25 has the highest AP among the three grouping limits, but the
-    differences are small: this is a modest refinement. The weather update gives
-    a modest improvement at the reference settings and much greater timestamp
-    coverage. This gain was not measured again with the final tuned settings.
-    The update also requires a different prediction time from the strict scenario.
+    A limit of 25 has the highest AP of the three limits, but the differences are
+    small, so this is a minor refinement. The weather update gives a small gain at
+    the reference settings and many more usable timestamps. We did not measure this
+    gain again with the final settings. The update also means predicting at a later
+    time than the strict scenario.
     ''')
     step('''
     ### 3.3 Describe the main boosting model
@@ -649,69 +617,84 @@ def build():
     step('''
     ### 3.4 Fit a forest with its own preparation
 
-    A random forest averages trees fitted on bootstrap samples, with random
-    feature subsets at each split. We keep 100 trees and at least five events per
-    leaf, as selected on the common validation. Numerical gaps receive training
-    medians and categories receive one-hot indicators. The selected forest uses
-    a weather limit of 15, while boosting uses 25; each keeps its validated setup.
-    We fit the forest twice, with and without the wind chill fill of 2.11, and
-    keep the option with the higher AP on 2020.
+    A random forest averages many trees, each fitted on a bootstrap sample and on a
+    random subset of the inputs at each split. We keep 100 trees and at least five
+    events per leaf, as selected on the common validation. Numerical gaps receive
+    training medians and categories become one-hot indicators. The forest uses a
+    weather limit of 15 categories while boosting uses 25: each model keeps the setup
+    that was validated for it.
+
+    Wind chill is one of the most incomplete inputs (see 2.10). The official formula
+    only applies up to 50 °F and for winds of at least 3 mph; otherwise the felt
+    temperature is simply the air temperature. A missing wind chill may therefore
+    often mean "same as the temperature" rather than "unknown". We test this idea
+    instead of assuming it: we fit the forest twice, with the training median or with
+    the temperature of the same accident (after the weather rule of 2.9), and keep the
+    option with the higher AP on 2020. Boosting keeps its native missing values.
     ''', '''
     forest_categories = CategoryPreparation(weather_cap=15).fit(features["train"])
 
-    def fit_forest(inputs):
-        train = forest_categories.transform(inputs["train"])
-        pre = preprocessor(train)
-        matrix = pre.fit_transform(train).astype("float32").toarray()
-        model = RandomForestClassifier(n_estimators=100, min_samples_leaf=5,
-            max_features="sqrt", random_state=SEED, n_jobs=4)
-        with threadpool_limits(limits=4):
-            model.fit(matrix, y["train"])
-            encoded = pre.transform(forest_categories.transform(inputs["validation"]))
-            ap = average_precision_score(y["validation"], model.predict_proba(encoded.astype("float32").toarray())[:, 1])
-        return {"model": model, "pre": pre, "ap": ap, "columns": matrix.shape[1]}
+    def fill_wind_chill(frame):
+        """A missing wind chill takes the air temperature of the same accident."""
+        result = frame.copy()
+        result["Wind_Chill(F)"] = result["Wind_Chill(F)"].fillna(result["Temperature(F)"])
+        return result
 
-    wind_chill_options = {"Training median": features, "Temperature, then training median": filled}
+    def forest_scores(model, prep, inputs, split):
+        """Probability of high impact given by a fitted forest, for one period."""
+        encoded = prep.transform(forest_categories.transform(inputs[split]))
+        return model.predict_proba(encoded.astype("float32").toarray())[:, 1]
+
+    wind_chill_options = {"Training median": features,
+        "Temperature, then training median": {s: fill_wind_chill(f) for s, f in features.items()}}
     forest_fits = {}
     for option, inputs in wind_chill_options.items():
-        forest_fits[option] = fit_forest(inputs)
-        _ = gc.collect()
+        train = forest_categories.transform(inputs["train"])
+        prep = preprocessor(train)
+        model = RandomForestClassifier(n_estimators=100, min_samples_leaf=5,
+            max_features="sqrt", random_state=SEED, n_jobs=4)
+        model.fit(prep.fit_transform(train).astype("float32").toarray(), y["train"])
+        ap = average_precision_score(y["validation"], forest_scores(model, prep, inputs, "validation"))
+        forest_fits[option] = {"model": model, "prep": prep, "ap": ap}
+        gc.collect()  # free memory between the two fits
+
     wind_chill_choice = pd.DataFrame({"Missing Wind_Chill(F)": list(forest_fits),
         "Forest validation AP": [fit["ap"] for fit in forest_fits.values()]})
     display(wind_chill_choice.round(4))
     wind_chill_choice.to_csv(REPORTS / "wind_chill_choice.csv", index=False)
     wind_chill_option = max(forest_fits, key=lambda option: forest_fits[option]["ap"])
     forest_inputs = wind_chill_options[wind_chill_option]
-    forest, forest_pre = forest_fits[wind_chill_option]["model"], forest_fits[wind_chill_option]["pre"]
+    forest, forest_pre = forest_fits[wind_chill_option]["model"], forest_fits[wind_chill_option]["prep"]
+    chosen_ap = forest_fits[wind_chill_option]["ap"]
+    other_ap = min(fit["ap"] for fit in forest_fits.values())
     display(Markdown(f"The forest keeps **{wind_chill_option.lower()}** for missing wind chill "
-        f"(2020 AP {forest_fits[wind_chill_option]['ap']:.4f}, against "
-        f"{min(fit['ap'] for fit in forest_fits.values()):.4f} for the other option)."))
+        f"(2020 AP {chosen_ap:.4f}, against {other_ap:.4f} for the other option)."))
+    del forest_fits  # keep only the selected forest in memory
+    gc.collect()
     display(pd.Series({"Training events": len(y["train"]), "Logical inputs": len(forest_categories.columns),
-        "Encoded columns": forest_fits[wind_chill_option]["columns"], "Trees": forest.n_estimators,
+        "Encoded columns": forest.n_features_in_, "Trees": forest.n_estimators,
         "Missing wind chill": wind_chill_option}, name="Forest").to_frame())
-    del forest_fits
-    _ = gc.collect()
     ''', '''
-    The forest is a real trained competitor. Its encoded matrix has more columns
-    than the 33 logical inputs because one variable can have several indicators.
-    Medians and encoding rules were fitted on training data only. The two wind
-    chill options give close AP on 2020: the temperature fill is better founded
-    physically, but in this execution it does not improve the forest's ranking,
-    so the training median is kept. The option is chosen on 2020 alone, like
-    every other setting, and the logistic regression below uses the same option.
-    This comparison assesses the selected pipelines, not the algorithm alone at
-    identical encodings.
+    The forest is a real trained competitor. Its encoded matrix has more columns than
+    the 33 inputs because one categorical input becomes several indicators. Medians
+    and encoding rules are fitted on training data only. The two wind chill options
+    give close AP on 2020, and the code keeps the better one (shown above). In our
+    run it is the plain training median, so the temperature fill, although it makes
+    physical sense, brings no gain; the logistic regression below uses the same
+    option. As for every other setting, the choice is made on 2020 only. The
+    comparison is between complete pipelines, not between algorithms with identical
+    encodings.
     ''')
     step('''
     ### 3.5 Add a linear reference with logistic regression
 
-    Logistic regression combines the inputs linearly before a sigmoid. It cannot
-    represent interactions unless we create them, which makes it a useful
-    reference: it shows how much the trees gain from non-linear combinations.
+    Logistic regression combines the inputs linearly and passes the result through a
+    sigmoid. It cannot represent interactions unless we create them, which makes it a
+    useful reference: it shows how much the trees gain from non-linear combinations.
     It uses the forest's categories and wind chill option, one-hot indicators,
-    training medians and standardised numerical inputs, so that the penalty
-    treats every coefficient on the same scale. We choose the inverse
-    regularisation strength C among 0.1, 1 and 10 using AP on 2020.
+    training medians and standardised numerical inputs, so that the penalty treats all
+    coefficients on the same scale. We choose the inverse regularisation strength C
+    among 0.1, 1 and 10 using the AP on 2020.
     ''', '''
     def logistic_inputs(split):
         return forest_categories.transform(forest_inputs[split])
@@ -720,13 +703,12 @@ def build():
     logistic_train = logistic_pre.fit_transform(logistic_inputs("train"))
     logistic_validation = logistic_pre.transform(logistic_inputs("validation"))
     logistic_models, logistic_rows = {}, []
-    with threadpool_limits(limits=4):
-        for C in [0.1, 1, 10]:
-            model = LogisticRegression(C=C, max_iter=2000)
-            model.fit(logistic_train, y["train"])
-            logistic_models[C] = model
-            logistic_rows.append({"C": C, "Iterations used": int(model.n_iter_[0]),
-                "Validation AP": average_precision_score(y["validation"], model.predict_proba(logistic_validation)[:, 1])})
+    for C in [0.1, 1, 10]:
+        model = LogisticRegression(C=C, max_iter=2000)
+        model.fit(logistic_train, y["train"])
+        logistic_models[C] = model
+        logistic_rows.append({"C": C, "Iterations used": int(model.n_iter_[0]),
+            "Validation AP": average_precision_score(y["validation"], model.predict_proba(logistic_validation)[:, 1])})
     logistic_choice = pd.DataFrame(logistic_rows)
     display(logistic_choice.round(4))
     logistic_choice.to_csv(REPORTS / "logistic_choice.csv", index=False)
@@ -736,97 +718,124 @@ def build():
         "Selected C": logistic_C}, name="Logistic regression").to_frame())
     del logistic_train, logistic_validation, logistic_models
     ''', '''
-    The regularisation strength is chosen on 2020 only, then kept fixed. The
-    three values give almost the same AP: with 500,000 training events, the
-    penalty changes little. The iteration counts stay below the limit, so the
-    optimiser converged. The comparison with the trees follows in 3.6.
+    The regularisation strength is chosen on 2020 only and then kept fixed. The three
+    values give almost the same AP: with 500,000 training events, the penalty changes
+    little. The iteration counts stay below the limit, so the optimiser converged.
+    The comparison with the trees follows in 3.6.
     ''')
     step('''
     ### 3.6 Compare validation predictions and fix decision thresholds
 
-    AP summarises precision across recall levels and measures ranking quality.
-    ROC-AUC measures positive-versus-negative ranking. Neither is classification
-    accuracy. For binary decisions, we choose the threshold that maximises F1 on
-    validation, balancing precision and recall, then keep it fixed for later years.
+    AP summarises precision over all recall levels and measures how well accidents
+    are ranked. ROC-AUC measures how well positives are ranked above negatives.
+    Neither is classification accuracy. For binary decisions we choose, for each
+    model, the threshold that maximises F1 on validation, and we keep it fixed for
+    the later years.
     ''', '''
-    def evaluate(target, prediction, threshold, priorities):
+    def evaluate(target, prediction, threshold, tie_break):
+        """Scores of one model on one period."""
         positive = prediction >= threshold
-        budget = max(1, int(np.ceil(0.10 * len(target))))
-        chosen = np.lexsort((priorities, -prediction))[:budget]
+        # Highest 10% of the scores; ties are broken with a fixed order that ignores the labels.
+        top = np.lexsort((tie_break, -prediction))[:int(np.ceil(0.10 * len(target)))]
         return {"Events": len(target), "Positive share": float(target.mean()),
             "AP": average_precision_score(target, prediction), "ROC-AUC": roc_auc_score(target, prediction),
             "Precision": precision_score(target, positive, zero_division=0),
             "Recall": recall_score(target, positive, zero_division=0),
             "F1": f1_score(target, positive, zero_division=0), "Threshold": float(threshold),
-            "Precision top 10%": float(target[chosen].mean()),
-            "Recall top 10%": float(target[chosen].sum() / target.sum())}
+            "Precision top 10%": float(target[top].mean()),
+            "Recall top 10%": float(target[top].sum() / target.sum())}
 
     def f1_threshold(target, prediction):
+        """Score threshold with the best F1."""
         precision, recall, thresholds = precision_recall_curve(target, prediction)
-        f1 = np.divide(2 * precision[:-1] * recall[:-1], precision[:-1] + recall[:-1],
-            out=np.zeros_like(thresholds), where=precision[:-1] + recall[:-1] > 0)
+        f1 = 2 * precision[:-1] * recall[:-1] / np.maximum(precision[:-1] + recall[:-1], 1e-12)
         return float(thresholds[np.argmax(f1)])
 
+    def predict_all(split):
+        """Scores of the three fitted models on one period."""
+        return {"Boosting": boosting.predict_proba(X[split])[:, 1],
+            "Forest": forest_scores(forest, forest_pre, forest_inputs, split),
+            "Logistic": logistic.predict_proba(logistic_pre.transform(logistic_inputs(split)))[:, 1]}
+
+    tie_break = {s: frame._priority.to_numpy() for s, frame in raw_clean.items()}
     predictions = {s: {"Constant": np.full(len(y[s]), prior)} for s in y}
-    def predict_forest(split):
-        encoded = forest_pre.transform(forest_categories.transform(forest_inputs[split]))
-        return forest.predict_proba(encoded.astype("float32").toarray())[:, 1]
-    def predict_logistic(split):
-        return logistic.predict_proba(logistic_pre.transform(logistic_inputs(split)))[:, 1]
-    with threadpool_limits(limits=4):
-        predictions["validation"]["Boosting"] = boosting.predict_proba(X["validation"])[:, 1]
-        predictions["validation"]["Forest"] = predict_forest("validation")
-        predictions["validation"]["Logistic"] = predict_logistic("validation")
+    predictions["validation"].update(predict_all("validation"))
     thresholds = {name: f1_threshold(y["validation"], values)
         for name, values in predictions["validation"].items()}
     score_rows = [{"Period": "validation", "Model": name,
-        **evaluate(y["validation"], values, thresholds[name], raw_clean["validation"]._priority.to_numpy())}
+        **evaluate(y["validation"], values, thresholds[name], tie_break["validation"])}
         for name, values in predictions["validation"].items()]
     validation_scores = pd.DataFrame(score_rows)
     display(validation_scores[["Model", "AP", "ROC-AUC", "Precision", "Recall", "F1"]].round(3))
     ''', '''
-    The common validation comparison supports boosting as the main model among
-    the settings examined. The forest and the logistic regression also improve
-    on the constant baseline, and the gap between the linear reference and the
-    trees indicates that combinations of conditions carry useful signal.
-    Validation F1 benefits from selecting the threshold on this same data, so it
-    is not an independent estimate. Parameters, vocabularies and thresholds are
-    now fixed before the later-period evaluation.
+    On the common validation data, boosting is the best of the settings we examined,
+    so it is our main model. The forest and the logistic regression also improve on
+    the constant baseline, and the gap between the linear model and the trees
+    suggests that combinations of conditions carry useful signal. The validation F1
+    is optimistic, because the threshold is chosen on the same data. Parameters,
+    category lists and thresholds are now fixed before the evaluation on later
+    periods.
     ''')
     step('''
-    ### 3.7 See which inputs the main model relies on
+    ### 3.7 Check two other boosting libraries
 
-    Permutation importance shuffles one input on 2020 and measures how much the
-    boosting AP drops; the model is not refitted. Correlated inputs share their
-    importance: shuffling latitude alone leaves State and longitude to carry
-    similar information, so each can look less important than the location as a
-    whole. We therefore also shuffle each group of 2.2 jointly, keeping the same
-    row order within the group. Each measure is repeated five times.
+    Our main model is scikit-learn's HistGradientBoosting. LightGBM and XGBoost are
+    two popular libraries that implement the same idea. We trained both in a separate
+    script (`scripts/compare_lightgbm.py`) with equivalent settings (63 leaves, 400
+    trees, learning rate 0.1), the same 33 inputs, the same periods and the same
+    threshold rule fixed on 2020. Their scores are saved in `results/lightgbm_comparison/`,
+    so the table below is read from that file and not recomputed here.
     ''', '''
-    with threadpool_limits(limits=4):
-        single = permutation_importance(boosting, X["validation"], y["validation"],
-            scoring="average_precision", n_repeats=5, random_state=SEED)
+    other_boosting = pd.read_csv(ROOT / "results/lightgbm_comparison/scores.csv")
+    other_boosting = other_boosting.pivot(index="Model", columns="Period", values="AP")
+    other_boosting = other_boosting.loc[["Boosting", "LightGBM", "XGBoost"], ["validation", "test", "stress"]]
+    other_boosting.columns = ["2020", "2021", "2022 to Sep 8"]
+    display(other_boosting.round(3))
+    ''', '''
+    The three libraries differ by about 0.003 AP at most in every period, so the choice
+    of library does not change our conclusions. We keep scikit-learn's model, which
+    performs as well and keeps the notebook simple. LightGBM trains faster in the
+    script (about 12 seconds instead of 36), which would matter with more data or a
+    larger search.
+    ''')
+    step('''
+    ### 3.8 See which inputs the main model relies on
+
+    Permutation importance shuffles one input on 2020 and measures how much the AP of
+    the boosting model drops; the model is not refitted. Correlated inputs share their
+    importance: if we shuffle latitude alone, State and longitude still carry similar
+    information, so each input can look less important than the location as a whole.
+    We therefore also shuffle each group of inputs from 2.2 together, keeping the same
+    row order inside the group. Every measure is repeated five times.
+    ''', '''
+    single = permutation_importance(boosting, X["validation"], y["validation"],
+        scoring="average_precision", n_repeats=5, random_state=SEED)
     single_importance = pd.DataFrame({"Input": X["validation"].columns,
         "AP drop": single.importances_mean, "Std": single.importances_std}).sort_values("AP drop", ascending=False)
+
     input_group_columns = {"Time": ["hour", "day_of_week", "month", "weekend"],
         "Location": ["Start_Lat", "Start_Lng", "State", "Timezone"], "Road context": ROAD,
         "Light": LIGHT, "Weather": WNUM + WCAT}
     reference_ap = average_precision_score(y["validation"], predictions["validation"]["Boosting"])
     rng = np.random.RandomState(SEED)
+
+    def group_ap_drop(columns, repeats=5):
+        """Shuffle a whole group of inputs together and measure how much the AP falls."""
+        drops = []
+        for _ in range(repeats):
+            order = rng.permutation(len(X["validation"]))
+            shuffled = X["validation"].copy()
+            for column in columns:
+                shuffled[column] = shuffled[column].iloc[order].set_axis(shuffled.index)
+            drops.append(reference_ap - average_precision_score(
+                y["validation"], boosting.predict_proba(shuffled)[:, 1]))
+        return np.mean(drops), np.std(drops)
+
     group_rows = []
-    with threadpool_limits(limits=4):
-        for group, columns in input_group_columns.items():
-            columns = [c for c in columns if c in X["validation"]]
-            drops = []
-            for _ in range(5):
-                order = rng.permutation(len(X["validation"]))
-                shuffled = X["validation"].copy()
-                for column in columns:
-                    shuffled[column] = shuffled[column].iloc[order].set_axis(shuffled.index)
-                drops.append(reference_ap - average_precision_score(
-                    y["validation"], boosting.predict_proba(shuffled)[:, 1]))
-            group_rows.append({"Group": group, "Inputs": len(columns),
-                "AP drop": np.mean(drops), "Std": np.std(drops)})
+    for group, columns in input_group_columns.items():
+        columns = [c for c in columns if c in X["validation"]]
+        drop, std = group_ap_drop(columns)
+        group_rows.append({"Group": group, "Inputs": len(columns), "AP drop": drop, "Std": std})
     group_importance = pd.DataFrame(group_rows).sort_values("AP drop", ascending=False)
     display(group_importance.round(4))
     single_importance.to_csv(REPORTS / "permutation_inputs.csv", index=False)
@@ -842,12 +851,12 @@ def build():
     plt.savefig(FIGURES / "05_importance.png")
     plt.show()
     ''', '''
-    These drops describe what the fitted model uses to rank 2020 accidents. They
-    are not causal effects: an input can matter because it correlates with how
-    accidents were recorded, and a low score does not prove that a factor has no
-    influence on traffic. A group's drop can exceed those of its single inputs,
-    because its inputs can no longer stand in for one another. The ranking is measured on validation and was not used to
-    select inputs.
+    These drops show what the fitted model uses to rank the 2020 accidents. They are
+    not causal effects: an input can matter because it is linked to how accidents were
+    recorded, and a small drop does not prove that a factor has no influence on
+    traffic. A group's drop can be larger than that of any single input, because its
+    inputs can no longer replace each other. The importance is measured on validation
+    and was not used to select inputs.
     ''')
     step('''
     ## 4. Evaluation
@@ -858,14 +867,11 @@ def build():
     available part of 2022. We keep the table compact and compare AP with the
     prevalence reference, since the positive share changes between years.
     ''', '''
-    with threadpool_limits(limits=4):
-        for split in ["test", "stress"]:
-            predictions[split]["Boosting"] = boosting.predict_proba(X[split])[:, 1]
-            predictions[split]["Forest"] = predict_forest(split)
-            predictions[split]["Logistic"] = predict_logistic(split)
-            for name, values in predictions[split].items():
-                score_rows.append({"Period": split, "Model": name,
-                    **evaluate(y[split], values, thresholds[name], raw_clean[split]._priority.to_numpy())})
+    for split in ["test", "stress"]:
+        predictions[split].update(predict_all(split))
+        for name, values in predictions[split].items():
+            score_rows.append({"Period": split, "Model": name,
+                **evaluate(y[split], values, thresholds[name], tie_break[split])})
     scores = pd.DataFrame(score_rows)
     scores.to_csv(REPORTS / "model_scores.csv", index=False)
     compact_scores = scores[scores.Period.isin(["test", "stress"])][
@@ -873,12 +879,11 @@ def build():
     compact_scores["Period"] = compact_scores.Period.map(period_names)
     display(compact_scores.round(3))
     ''', '''
-    Boosting remains ahead of the selected forest and the logistic regression
-    on these historical periods.
-    Similar scores across years are encouraging for this scope, but changes in
-    labels and incomplete coverage limit the interpretation. These years had
-    already been explored in the project; a new confirmation would require a
-    later independent period.
+    Boosting stays ahead of the forest and of the logistic regression on these
+    historical periods. Similar scores across years are encouraging, but changes in
+    the labels and the incomplete coverage limit what we can conclude. These years
+    had already been explored in the project; a new confirmation would need a later
+    independent period.
     ''')
     step('''
     ### 4.2 Visualise precision, recall and temporal ranking
@@ -937,32 +942,50 @@ def build():
     intervention costs.
     ''')
     step('''
-    ### 4.4 Look for patterns in errors without changing the model
+    ### 4.4 Look for patterns in errors by hour and by State
 
-    As a first descriptive analysis, we group 2021 by start-hour range. We show
-    both missed-positive and false-positive rates with their denominators. A
-    difference can reflect population composition; it is not evidence of causation.
+    As a first descriptive analysis we group the 2021 accidents by start-hour range
+    and by State (the ten most frequent States of the sample). For each group we show
+    the number of positives and negatives, the share of positives that the model
+    misses and the share of negatives that it flags. Location was the most important
+    group in 3.8, so we want to see whether the errors are spread evenly over States.
+    A difference between groups can come from the mix of accidents; it is not evidence
+    of a cause.
     ''', '''
-    errors = pd.DataFrame({"Hour group": pd.cut(raw_clean["test"]._t.dt.hour,
-        bins=[-1, 5, 11, 17, 23], labels=["00-05", "06-11", "12-17", "18-23"]),
-        "Actual": y["test"], "Predicted": positive_test})
-    error_rows = []
-    for group, frame in errors.groupby("Hour group", observed=True):
-        actual = frame.Actual.eq(1)
-        negatives = ~actual
-        error_rows.append({"Start hour": str(group), "Events": len(frame),
-            "Positives": int(actual.sum()), "Negatives": int(negatives.sum()),
-            "Missed positives (%)": 100 * (~frame.loc[actual, "Predicted"]).mean(),
-            "False positives (%)": 100 * frame.loc[negatives, "Predicted"].mean()})
-    error_table = pd.DataFrame(error_rows)
-    display(error_table.round(1))
-    error_table.to_csv(REPORTS / "errors_by_hour.csv", index=False)
+    errors = pd.DataFrame({"Actual": y["test"].astype(bool), "Predicted": positive_test,
+        "Start hour": pd.cut(raw_clean["test"]._t.dt.hour, bins=[-1, 5, 11, 17, 23],
+                             labels=["00-05", "06-11", "12-17", "18-23"]),
+        "State": raw_clean["test"].State})
+
+    def error_rates(frame, column):
+        """Share of missed positives and of false alerts for each value of a column."""
+        rows = []
+        for value, part in frame.groupby(column, observed=True):
+            positives, negatives = part[part.Actual], part[~part.Actual]
+            rows.append({column: str(value), "Events": len(part), "Positives": len(positives),
+                "Negatives": len(negatives),
+                "Missed positives (%)": 100 * (~positives.Predicted).mean(),
+                "False positives (%)": 100 * negatives.Predicted.mean()})
+        return pd.DataFrame(rows)
+
+    error_by_hour = error_rates(errors, "Start hour")
+    top_states = errors.State.value_counts().head(10).index
+    error_by_state = error_rates(errors[errors.State.isin(top_states)], "State")
+    error_by_state = error_by_state.sort_values("Events", ascending=False).reset_index(drop=True)
+    display(error_by_hour.round(1))
+    display(error_by_state.round(1))
+    error_by_hour.to_csv(REPORTS / "errors_by_hour.csv", index=False)
+    error_by_state.to_csv(REPORTS / "errors_by_state.csv", index=False)
+    missed = error_by_state.set_index("State")["Missed positives (%)"]
+    display(Markdown(f"Among these States, the share of missed positives goes from **{missed.min():.0f}%** "
+        f"({missed.idxmin()}) to **{missed.max():.0f}%** ({missed.idxmax()})."))
     ''', '''
-    In this sample, the missed-positive rate is higher in the morning than in the
-    evening. This gives us a concrete subgroup to investigate further. The two
-    error types have different denominators, and population differences can
-    contribute to the pattern. We keep the model fixed rather than tuning it on
-    this historical evaluation.
+    In this sample, the share of missed positives is higher in the morning than in the
+    evening. The second table and the sentence under it show how much this share
+    changes between States. These tables describe our errors; they do not explain
+    them: the mix of accidents differs between hours and States, and the numbers of
+    positives and negatives behind each rate differ too. We keep the model fixed
+    instead of tuning it on this historical evaluation.
     ''')
     step('''
     ### 4.5 Distinguish a classification threshold from an alert budget
@@ -998,18 +1021,20 @@ def build():
         "The main choices are a larger training sample and a more capable boosting configuration; "
         "the weather category limit is a smaller refinement."))
     ''', '''
-    Combining the approaches helped us understand that preprocessing and evaluation
-    belong together. Kamar's exploration and first models made the preparation
-    choices concrete. Yanis's event and temporal checks made the comparisons
-    easier to interpret. A higher score is meaningful only when we know its data,
-    permitted information and prediction time.
+    Combining the approaches helped us see that preprocessing and evaluation belong
+    together. Kamar's exploration and first models made the preparation choices
+    concrete, and Yanis's checks on events and time made the comparisons easier to
+    interpret. A higher score only means something when we know the data, the allowed
+    information and the prediction time behind it.
 
-    The model still makes mistakes. Results concern one provider, most positives
-    are level 3, and 2022 is incomplete. Weather observation times do not establish
-    publication times, and the update is a later prediction. We have not calibrated
-    the scores as probabilities or confirmed the model on a newly unseen period.
-    With more time, we would extend error analysis to locations, study calibration,
-    and evaluate on a later independent period.
+    The model still makes mistakes. Our results concern one data source, most
+    positives are Severity 3, and 2022 is incomplete. Weather observation times do
+    not tell us when the readings were published, so the update is a later
+    prediction. We have not calibrated the scores as probabilities and we have not
+    confirmed the model on a new, unseen period. With more time we would study
+    calibration, analyse the errors at a finer level (cities, road types), test a
+    split with September boundaries like Kamar's preparation (it matches the end of
+    Source2 on 8 September 2022), and evaluate on a later independent period.
     ''')
     step('''
     ## Appendix A. Full data dictionary
@@ -1035,17 +1060,17 @@ def build():
     step('''
     ## Appendix B. Reproduction and consistency
 
-    We check periods, event uniqueness, input exclusions and fixed category rules.
-    Boosting must reproduce its recorded validation AP and threshold exactly: a
-    constant input such as Turning_Loop cannot be used by any split, so removing
-    it leaves the model unchanged. The forest is different. Its recorded result
-    used 34 inputs and training medians for wind chill; it now uses 33 inputs and
-    the wind chill option of 3.4. With one input fewer, the random feature subsets
-    at each split also differ. We therefore show the recorded and current forest
-    AP side by side instead of requiring them to match.
-    These are internal consistency checks, not independent validation of labels.
-    An approximate proximity diagnostic uses explicit nanosecond timestamps;
-    it never removes nearby events or changes the model.
+    We check the periods, the uniqueness of events, the excluded inputs and the fixed
+    category lists. Boosting must reproduce its recorded validation AP and threshold
+    exactly: a constant input such as Turning_Loop cannot be used by any split, so
+    removing it leaves the model unchanged. The forest is different. Its recorded
+    result used 34 inputs and the training median for wind chill; it now uses 33
+    inputs and the wind chill option chosen in 3.4. With one input fewer, the random
+    feature subsets at each split also change, so we show the recorded and the
+    current forest AP side by side instead of requiring them to match.
+    These are internal consistency checks, not an independent validation of the
+    labels. A rough proximity diagnostic uses explicit nanosecond timestamps; it
+    never removes nearby events and does not change the model.
     ''', '''
     checks = {}
     years = {"train": {2016, 2017, 2018, 2019}, "validation": {2020}, "test": {2021}, "stress": {2022}}

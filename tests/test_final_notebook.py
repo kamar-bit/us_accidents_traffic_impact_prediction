@@ -56,9 +56,32 @@ class FinalNotebookChecks(unittest.TestCase):
     def test_logistic_regression_is_compared_with_the_trees(self):
         code = "\n".join(c.source for c in self.notebook.cells if c.cell_type == "code")
         self.assertIn("for C in [0.1, 1, 10]", code)
-        self.assertIn('predictions["validation"]["Logistic"]', code)
+        self.assertIn('"Logistic": logistic.predict_proba', code)
+        self.assertIn('predictions["validation"].update(predict_all("validation"))', code)
         self.assertIn('ranking[["Constant", "Logistic", "Forest", "Boosting"]].plot.bar', code)
         self.assertIn('scoring="average_precision", n_repeats=5', code)
+
+    def test_other_boosting_libraries_are_reported(self):
+        code = "\n".join(c.source for c in self.notebook.cells if c.cell_type == "code")
+        self.assertIn("results/lightgbm_comparison/scores.csv", code)
+        self.assertIn('["Boosting", "LightGBM", "XGBoost"]', code)
+
+    def test_errors_are_reported_by_hour_and_by_state(self):
+        code = "\n".join(c.source for c in self.notebook.cells if c.cell_type == "code")
+        self.assertIn('error_rates(errors, "Start hour")', code)
+        self.assertIn('error_rates(errors[errors.State.isin(top_states)], "State")', code)
+        self.assertIn("errors_by_state.csv", code)
+
+    def test_wind_chill_fill_is_tested_once_in_the_forest_section(self):
+        text = "\n".join(cell.source for cell in self.notebook.cells)
+        self.assertEqual(text.count("def fill_wind_chill"), 1)
+        self.assertNotIn("2.12 Learn categorical", text)
+        self.assertIn("2.11 Learn categorical vocabularies", text)
+
+    def test_related_work_cites_the_public_projects_that_were_read(self):
+        text = "\n".join(cell.source for cell in self.notebook.cells)
+        for name in ["Atharva-Penkar", "Sams-Alt-Personality", "rayenchanchah01"]:
+            self.assertIn(name, text)
 
     def test_dictionary_marks_turning_loop_excluded(self):
         dictionary = data_dictionary(["Turning_Loop", "Junction"]).set_index("Column")
